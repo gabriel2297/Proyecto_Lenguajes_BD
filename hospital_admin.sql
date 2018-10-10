@@ -47,3 +47,4 @@ CREATE TABLE paciente_x_tratamiento(
     CONSTRAINT CK_ID_TRATAMIENTO_X_CEDULA PRIMARY KEY (id_tratamiento, cedula)
 );
 
+INSERT INTO genero (id_genero, genero) VALUES ('M', 'Masculino');
