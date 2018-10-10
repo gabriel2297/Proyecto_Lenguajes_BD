@@ -1,0 +1,15 @@
+.encabezado_h1, .encabezado_h4{
+    text-align: center;
+}
+.encabezado_h1 + .encabezado_h4 {
+    margin-top: -15px;
+    margin-bottom: 30px;
+}
+
+.pie_pagina{
+    text-align: center;
+}
+
+.container{
+    margin-bottom: 120px;
+}
