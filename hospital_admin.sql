@@ -47,4 +47,71 @@ CREATE TABLE paciente_x_tratamiento(
     CONSTRAINT CK_ID_TRATAMIENTO_X_CEDULA PRIMARY KEY (id_tratamiento, cedula)
 );
 
+
+/* INSERCION DE DATOS */
+
+-- generos
 INSERT INTO genero (id_genero, genero) VALUES ('M', 'Masculino');
+INSERT INTO genero (id_genero, genero) VALUES ('F', 'Femenino');
+
+-- tipo de sangre
+INSERT INTO tipo_sangre (id_tipo, tipo) VALUES (1, 'O negativo');
+INSERT INTO tipo_sangre (id_tipo, tipo) VALUES (2, 'O positivo');
+
+
+/* PROCEDIMIENTOS ALMACENADOS */
+CREATE OR REPLACE PROCEDURE agregar_paciente(
+    cedula VARCHAR2,
+    nombre VARCHAR2,
+    apellido1 VARCHAR2,
+    apellido2 VARCHAR2,
+    telefono VARCHAR2,
+    fecha_nacimiento DATE,
+    correo_electronico VARCHAR2,
+    telefono_sos VARCHAR2,
+    id_tipo_sangre NUMBER,
+    id_genero VARCHAR2,
+    peso NUMBER,
+    altura NUMBER)
+IS
+-- declarar variables
+total NUMBER;
+BEGIN
+    -- revisar si ya existe alguien con esa cedula
+    total := 0;
+    SELECT COUNT(*) INTO total FROM paciente WHERE cedula = cedula;
+    
+    -- si no, agregar a la persona
+    IF total = 0 THEN
+        INSERT INTO paciente(cedula,
+                             nombre,
+                             apellido1,
+                             apellido2,
+                             telefono,
+                             fecha_nacimiento,
+                             correo_electronico,
+                             telefono_sos,
+                             id_tipo_sangre,
+                             id_genero,
+                             peso,
+                             altura)
+        VALUES (cedula,
+                nombre,
+                apellido1,
+                apellido2,
+                telefono,
+                fecha_nacimiento,
+                correo_electronico,
+                telefono_sos,
+                id_tipo_sangre,
+                id_genero,
+                peso,
+                altura);
+    END IF;
+END;
+
+
+
+
+
+
