@@ -61,18 +61,18 @@ INSERT INTO tipo_sangre (id_tipo, tipo) VALUES (2, 'O positivo');
 
 /* PROCEDIMIENTOS ALMACENADOS */
 CREATE OR REPLACE PROCEDURE agregar_paciente(
-    cedula VARCHAR2,
-    nombre VARCHAR2,
-    apellido1 VARCHAR2,
-    apellido2 VARCHAR2,
-    telefono VARCHAR2,
-    fecha_nacimiento DATE,
-    correo_electronico VARCHAR2,
-    telefono_sos VARCHAR2,
-    id_tipo_sangre NUMBER,
-    id_genero VARCHAR2,
-    peso NUMBER,
-    altura NUMBER)
+    cedula IN VARCHAR2,
+    nombre IN VARCHAR2,
+    apellido1 IN VARCHAR2,
+    apellido2 IN VARCHAR2,
+    telefono IN VARCHAR2,
+    fecha_nacimiento IN DATE,
+    correo_electronico IN VARCHAR2,
+    telefono_sos IN VARCHAR2,
+    id_tipo_sangre IN NUMBER,
+    id_genero IN VARCHAR2,
+    peso IN NUMBER,
+    altura IN NUMBER)
 IS
 -- declarar variables
 total NUMBER;
@@ -109,8 +109,6 @@ BEGIN
                 altura);
     END IF;
 END;
-
-
 
 
 
