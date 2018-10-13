@@ -1,9 +1,9 @@
-$(document).ready(function() {
+$(document).ready( function () {
     cargarTabla();
-});
+} );
 
 var cargarTabla = function(){
-    var tabla = $("#tabla_pacientes").DataTable({
+    $("#tabla_pacientes").DataTable({
         rowReorder: {
             selector: 'td:nth-child(2)'
         },
@@ -70,12 +70,25 @@ function guardarPaciente(llave){
             peso: peso.val(),
             altura: altura.val()
         }, success: function(respuesta){
-            cargarTabla();
-            $("#resultados").addClass("alert alert-success");
-            $("#resultados").html(respuesta);
-            $("#resultados").delay(3000).fadeOut(function(){
-                $(this).remove();
-            });
+            if(respuesta != "Error"){
+                cargarTabla();
+                $("#resultados").addClass("alert alert-success");
+                $("#resultados").html(respuesta);
+                $("#resultados").delay(5000).fadeOut(function(){
+                    $(this).removeClass("alert alert-success");
+                    $(this).html("");
+                    $(this).css("display", "");
+                });
+            }
+            else{
+                $("#resultados").addClass("alert alert-danger");
+                $("#resultados").html("Ocurrió un error, por favor intentelo de nuevo. Si vuelve a pasar comuníquese a soporte@pizzahotml.com");
+                $("#resultados").delay(5000).fadeOut(function(){
+                    $(this).removeClass("alert alert-danger");
+                    $(this).html("");
+                    $(this).css("display", "");
+                });
+            }
         }
     });
 }

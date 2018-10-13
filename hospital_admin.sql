@@ -58,8 +58,6 @@ INSERT INTO genero (id_genero, genero) VALUES ('F', 'Femenino');
 INSERT INTO tipo_sangre (id_tipo, tipo) VALUES (1, 'O negativo');
 INSERT INTO tipo_sangre (id_tipo, tipo) VALUES (2, 'O positivo');
 
-select * from paciente;
-
 /* PROCEDIMIENTOS ALMACENADOS */
 CREATE OR REPLACE PROCEDURE agregar_paciente(
     cedula IN VARCHAR2,
@@ -110,9 +108,5 @@ BEGIN
                 altura);
     END IF;
 END;
-
-
-
-
 
 

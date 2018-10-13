@@ -46,7 +46,6 @@
             else{
                 $arreglo['data'] = array();
                 echo json_encode($arreglo);
-                oci_close($conn);
                 return;
             }
         }
@@ -125,9 +124,12 @@
             oci_bind_by_name($query, ":altura", $altura);
 
             // ejecutar el procedimiento almacenado 
-            oci_execute($query);
-
-            echo "La información fue guardada con éxito <i class='far fa-check-circle'></i>";
+            if(oci_execute($query)){
+                echo "La información fue guardada con éxito <i class='far fa-check-circle'></i>";
+            }
+            else{
+                echo "Error";
+            }
         }
 
         // cerrar conexion
