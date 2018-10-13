@@ -48,7 +48,7 @@ CREATE TABLE paciente_x_tratamiento(
 );
 
 
-/* INSERCION DE DATOS */
+/* INSERCION DE DATOS NECESARIOS */
 
 -- generos
 INSERT INTO genero (id_genero, genero) VALUES ('M', 'Masculino');
@@ -58,6 +58,7 @@ INSERT INTO genero (id_genero, genero) VALUES ('F', 'Femenino');
 INSERT INTO tipo_sangre (id_tipo, tipo) VALUES (1, 'O negativo');
 INSERT INTO tipo_sangre (id_tipo, tipo) VALUES (2, 'O positivo');
 
+select * from paciente;
 
 /* PROCEDIMIENTOS ALMACENADOS */
 CREATE OR REPLACE PROCEDURE agregar_paciente(
@@ -66,7 +67,7 @@ CREATE OR REPLACE PROCEDURE agregar_paciente(
     apellido1 IN VARCHAR2,
     apellido2 IN VARCHAR2,
     telefono IN VARCHAR2,
-    fecha_nacimiento IN DATE,
+    fecha_nacimiento IN VARCHAR2,
     correo_electronico IN VARCHAR2,
     telefono_sos IN VARCHAR2,
     id_tipo_sangre IN NUMBER,
@@ -100,7 +101,7 @@ BEGIN
                 apellido1,
                 apellido2,
                 telefono,
-                fecha_nacimiento,
+                TO_DATE(fecha_nacimiento, 'DD-MM-YYYY'),
                 correo_electronico,
                 telefono_sos,
                 id_tipo_sangre,
@@ -109,6 +110,8 @@ BEGIN
                 altura);
     END IF;
 END;
+
+
 
 
 

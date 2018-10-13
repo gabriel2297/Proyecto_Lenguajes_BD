@@ -51,28 +51,25 @@
                     <div class="form-group">
                         <label for="tipo_sangre">Tipo de sangre</label>
                         <select class="form-control" id="tipo_sangre" name="tipo_sangre">
-                            <option>Por implementar</option>
-                            <!--
                             <?php
-                                $query = "SELECT genero FROM hospital_admin.genero;";
-                                $statement = oci_parse ($conn, $query);
-                                oci_execute ($statement);
-                                while($row = oci_fetch_array ($statement, OCI_ASSOC)){
-                                    echo "<option>" . $row['genero']. "</option>";
+                                $datos = oci_parse ($conn, "SELECT tipo FROM hospital_admin.tipo_sangre");
+                                oci_execute ($datos);
+                                while($fila = oci_fetch_assoc ($datos)){
+                                    echo "<option>" . $fila['TIPO']. "</option>";
                                 }
-                            ?> -->
+                            ?>
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="genero">Genero</label>
                         <select class="form-control" id="genero" name="genero">
-                            <option>Por implementar</option>
-                            <!-- <?php
-                                $datos = mysqli_query($conn, "SELECT tipo_carne FROM tipo_carnes;");
-                                while($fila = mysqli_fetch_array($datos)){
-                                    echo "<option>" . $fila['tipo_carne']. "</option>";
+                            <?php
+                                $datos = oci_parse ($conn, "SELECT genero FROM hospital_admin.genero");
+                                oci_execute ($datos);
+                                while($fila = oci_fetch_assoc ($datos)){
+                                    echo "<option>" . $fila['GENERO']. "</option>";
                                 }
-                            ?> -->
+                            ?>
                         </select>
                     </div>
                     <div class="form-group">

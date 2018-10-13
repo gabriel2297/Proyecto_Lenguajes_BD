@@ -1,3 +1,42 @@
+$(document).ready(function() {
+    cargarTabla();
+});
+
+var cargarTabla = function(){
+    var tabla = $("#tabla_pacientes").DataTable({
+        rowReorder: {
+            selector: 'td:nth-child(2)'
+        },
+        responsive: true,
+        "destroy": true,
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+        }, 
+        "ajax":{
+            url: 'http://localhost/Proyecto_Lenguajes_BD/php/manejoPacientes.php',
+            method: 'POST',
+            data: {
+                llave: 'cargarTabla'
+            }
+        },
+        "columns": [
+        {"data":"cedula", "data-order":"cedula"},
+        {"data":"nombre"},
+        {"data":"apellido1"},
+        {"data":"apellido2"},
+        {"data":"telefono"},
+        {"data":"fecha_nacimiento"},
+        {"data":"correo"},
+        {"data":"telefono_sos"},
+        {"data":"tipo_sangre"},
+        {"data":"genero"},
+        {"data":"peso"},
+        {"data":"altura"},
+        ]
+    });
+}
+
+
 function guardarPaciente(llave){
     var cedula = $("#cedula");
     var nombre = $("#nombre");
@@ -7,6 +46,8 @@ function guardarPaciente(llave){
     var fecha_nacimiento = $("#fecha_nacimiento");
     var correo = $("#correo");
     var telefono_sos = $("#telefono_sos");
+    var tipo_sangre = $("#tipo_sangre");
+    var genero = $("#genero");
     var peso = $("#peso");
     var altura = $("#altura");
 
@@ -24,9 +65,12 @@ function guardarPaciente(llave){
             fecha_nacimiento: fecha_nacimiento.val(),
             correo: correo.val(),
             telefono_sos: telefono_sos.val(),
+            tipo_sangre: tipo_sangre.val(),
+            genero: genero.val(),
             peso: peso.val(),
             altura: altura.val()
         }, success: function(respuesta){
+            cargarTabla();
             $("#resultados").addClass("alert alert-success");
             $("#resultados").html(respuesta);
             $("#resultados").delay(3000).fadeOut(function(){
