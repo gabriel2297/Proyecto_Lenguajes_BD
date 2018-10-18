@@ -47,6 +47,7 @@ CREATE TABLE paciente_x_tratamiento(
     CONSTRAINT CK_ID_TRATAMIENTO_X_CEDULA PRIMARY KEY (id_tratamiento, cedula)
 );
 
+
 INSERT INTO genero (id_genero, genero) VALUES ('M', 'Masculino');
 
 
@@ -121,5 +122,68 @@ id_tipo_cita number not null,
 
 );
 
+
+
+/* INSERCION DE DATOS NECESARIOS */
+
+-- generos
+INSERT INTO genero (id_genero, genero) VALUES ('M', 'Masculino');
+INSERT INTO genero (id_genero, genero) VALUES ('F', 'Femenino');
+
+-- tipo de sangre
+INSERT INTO tipo_sangre (id_tipo, tipo) VALUES (1, 'O negativo');
+INSERT INTO tipo_sangre (id_tipo, tipo) VALUES (2, 'O positivo');
+
+/* PROCEDIMIENTOS ALMACENADOS */
+CREATE OR REPLACE PROCEDURE agregar_paciente(
+    cedula IN VARCHAR2,
+    nombre IN VARCHAR2,
+    apellido1 IN VARCHAR2,
+    apellido2 IN VARCHAR2,
+    telefono IN VARCHAR2,
+    fecha_nacimiento IN VARCHAR2,
+    correo_electronico IN VARCHAR2,
+    telefono_sos IN VARCHAR2,
+    id_tipo_sangre IN NUMBER,
+    id_genero IN VARCHAR2,
+    peso IN NUMBER,
+    altura IN NUMBER)
+IS
+-- declarar variables
+total NUMBER;
+BEGIN
+    -- revisar si ya existe alguien con esa cedula
+    total := 0;
+    SELECT COUNT(*) INTO total FROM paciente WHERE cedula = cedula;
+    
+    -- si no, agregar a la persona
+    IF total = 0 THEN
+        INSERT INTO paciente(cedula,
+                             nombre,
+                             apellido1,
+                             apellido2,
+                             telefono,
+                             fecha_nacimiento,
+                             correo_electronico,
+                             telefono_sos,
+                             id_tipo_sangre,
+                             id_genero,
+                             peso,
+                             altura)
+        VALUES (cedula,
+                nombre,
+                apellido1,
+                apellido2,
+                telefono,
+                TO_DATE(fecha_nacimiento, 'DD-MM-YYYY'),
+                correo_electronico,
+                telefono_sos,
+                id_tipo_sangre,
+                id_genero,
+                peso,
+                altura);
+    END IF;
+END;
+a5cf9e69ac50e197c9955844d4c8460061b8db06
 
 
