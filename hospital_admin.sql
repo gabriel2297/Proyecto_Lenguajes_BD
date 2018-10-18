@@ -48,3 +48,78 @@ CREATE TABLE paciente_x_tratamiento(
 );
 
 INSERT INTO genero (id_genero, genero) VALUES ('M', 'Masculino');
+
+
+
+CREATE TABLE departamento(
+id_departamento number not null primary key,
+departamento varchar2(30) not null
+);
+
+CREATE TABLE trabajo(
+id_trabajo number not null primary key,
+titulo_trabajo varchar2(30)
+);
+
+
+CREATE TABLE empleado(
+    cedula VARCHAR2(12) NOT NULL PRIMARY KEY,
+    nombre VARCHAR2(30) NOT NULL,
+    apellido1 VARCHAR2(30) NOT NULL,
+    apellido2 VARCHAR2(30) NOT NULL,
+    telefono VARCHAR2(9) NOT NULL,
+    correo_electronico VARCHAR2(100) NOT NULL,
+    fecha_nacimiento DATE NOT NULL,
+    id_departamento number not null,
+    id_trabajo number not null,
+      
+    CONSTRAINT EHK_CEDULA CHECK (REGEXP_LIKE(cedula, '^[0-1][1-7](-)[0-9]{4}(-)[0-9]{4}$')),
+    CONSTRAINT EHK_TELEFONO CHECK (REGEXP_LIKE(telefono, '^[0-9]{4}(-)[0-9]{4}$')),
+    CONSTRAINT EHK_CORREO CHECK (REGEXP_LIKE(correo_electronico, '^.+@[a-z]+(\.com)$')),
+    CONSTRAINT FK_ID_DEPARTAMENTO FOREIGN KEY (id_departamento) REFERENCES departamento(id_departamento),
+    CONSTRAINT FK_ID_TRABAJO FOREIGN KEY (id_trabajo) REFERENCES trabajo(id_trabajo)
+);
+
+
+
+CREATE TABLE tipo_sala(
+id_tipo number not null primary key,
+tipo varchar2(30)
+);
+
+
+
+
+CREATE TABLE salas(
+num_salas number not null primary key,
+id_tipo number not null,
+constraint FK_ID_TIPO FOREIGN KEY(id_tipo)  REFERENCES tipo_sala(id_tipo) 
+);
+
+
+CREATE TABLE tipo_cita(
+id_tipo_cita number not null primary key,
+tipo_cita varchar2(30)
+);
+
+
+CREATE TABLE cita(
+id_cita number not null primary key,
+cedula_paciente varchar2(12) not null,
+cedula_empleado varchar2(12) not null,
+num_sala number not null,
+fecha_hora date not null,
+observaciones varchar2(200),
+id_tipo_cita number not null,
+
+
+ FOREIGN KEY(cedula_paciente) REFERENCES paciente(cedula),
+ FOREIGN KEY(cedula_empleado) REFERENCES empleado(cedula),
+ FOREIGN KEY(num_sala) REFERENCES salas(num_salas),
+ FOREIGN KEY(id_tipo_cita) references tipo_cita(id_tipo_cita)
+
+
+);
+
+
+
