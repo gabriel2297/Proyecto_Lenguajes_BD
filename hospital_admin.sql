@@ -131,25 +131,25 @@ INSERT INTO tipo_sangre (id_tipo, tipo) VALUES (2, 'O positivo');
 
 /* PROCEDIMIENTOS ALMACENADOS */
 CREATE OR REPLACE PROCEDURE agregar_paciente(
-    cedula IN VARCHAR2,
-    nombre IN VARCHAR2,
-    apellido1 IN VARCHAR2,
-    apellido2 IN VARCHAR2,
-    telefono IN VARCHAR2,
-    fecha_nacimiento IN VARCHAR2,
-    correo_electronico IN VARCHAR2,
-    telefono_sos IN VARCHAR2,
-    id_tipo_sangre IN NUMBER,
-    id_genero IN VARCHAR2,
-    peso IN NUMBER,
-    altura IN NUMBER)
+    cedula_paciente IN VARCHAR2,
+    nombre_paciente IN VARCHAR2,
+    apellido1_paciente IN VARCHAR2,
+    apellido2_paciente IN VARCHAR2,
+    telefono_paciente IN VARCHAR2,
+    fecha_nacimiento_paciente IN VARCHAR2,
+    correo_electronico_paciente IN VARCHAR2,
+    telefono_sos_paciente IN VARCHAR2,
+    id_tipo_sangre_paciente IN NUMBER,
+    id_genero_paciente IN VARCHAR2,
+    peso_paciente IN NUMBER,
+    altura_paciente IN NUMBER)
 IS
 -- declarar variables
 total NUMBER;
 BEGIN
     -- revisar si ya existe alguien con esa cedula
     total := 0;
-    SELECT COUNT(*) INTO total FROM paciente WHERE cedula = cedula;
+    SELECT COUNT(*) INTO total FROM paciente WHERE cedula = cedula_paciente;
     
     -- si no, agregar a la persona
     IF total = 0 THEN
@@ -165,18 +165,18 @@ BEGIN
                              id_genero,
                              peso,
                              altura)
-        VALUES (cedula,
-                nombre,
-                apellido1,
-                apellido2,
-                telefono,
-                TO_DATE(fecha_nacimiento, 'DD-MM-YYYY'),
-                correo_electronico,
-                telefono_sos,
-                id_tipo_sangre,
-                id_genero,
-                peso,
-                altura);
+        VALUES (cedula_paciente,
+                nombre_paciente,
+                apellido1_paciente,
+                apellido2_paciente,
+                telefono_paciente,
+                TO_DATE(fecha_nacimiento_pac, 'DD-MM-YYYY'),
+                correo_electronico_paciente,
+                telefono_sos_paciente,
+                id_tipo_sangre_paciente,
+                id_genero_paciente,
+                peso_paciente,
+                altura_paciente);
     END IF;
 END;
 
