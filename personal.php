@@ -35,6 +35,7 @@
                         <li><a class="nav-link" href="pacientes.php">Pacientes</a></li>
                         <li><a class="nav-link active" href="personal.php">Personal</a></li>
                         <li><a class="nav-link" href="salas.php">Salas</a></li>
+                        <li><a class="nav-link" href="tratamientos.php">Tratamientos</a></li>
                     </ul>
                 </div>
             </nav> 	

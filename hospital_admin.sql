@@ -14,7 +14,6 @@ CREATE TABLE tipo_sangre(
 CREATE TABLE tratamientos(
     id_tratamiento NUMBER NOT NULL PRIMARY KEY,
     tratamiento VARCHAR2(30) NOT NULL,
-    fecha_receta DATE NOT NULL,
     CONSTRAINT UNIQUE_TRATAMIENTO UNIQUE (tratamiento)
 );
 
@@ -42,6 +41,7 @@ CREATE TABLE paciente(
 CREATE TABLE paciente_x_tratamiento(
     id_tratamiento NUMBER NOT NULL,
     cedula VARCHAR2(12) NOT NULL,
+    fecha_receta DATE NOT NULL,
     CONSTRAINT FK_ID_TRATAMIENTO FOREIGN KEY (id_tratamiento) REFERENCES tratamientos(id_tratamiento),
     CONSTRAINT FK_CEDULA_PACIENTE FOREIGN KEY (cedula) REFERENCES paciente(cedula),
     CONSTRAINT CK_ID_TRATAMIENTO_X_CEDULA PRIMARY KEY (id_tratamiento, cedula)
@@ -130,6 +130,8 @@ INSERT INTO tipo_sangre (id_tipo, tipo) VALUES (1, 'O negativo');
 INSERT INTO tipo_sangre (id_tipo, tipo) VALUES (2, 'O positivo');
 
 /* PROCEDIMIENTOS ALMACENADOS */
+
+-- procedimiento almacenado para guardar un paciente
 CREATE OR REPLACE PROCEDURE agregar_paciente(
     cedula_paciente IN VARCHAR2,
     nombre_paciente IN VARCHAR2,
@@ -180,5 +182,22 @@ BEGIN
     END IF;
 END;
 
-
-
+-- procedimient almacenado para guardar un tratamiento
+CREATE OR REPLACE PROCEDURE agregar_tratamiento(
+    codigo IN NUMBER,
+    descripcion IN VARCHAR2
+)
+IS
+-- declarar variables
+total NUMBER;
+BEGIN
+    -- revisar si ya existe tratamiento con ese codigo
+    total := 0;
+    SELECT COUNT(*) INTO total FROM tratamientos WHERE id_tratamiento = codigo;
+    
+    -- si no, agregarlo
+    IF total = 0 THEN
+        INSERT INTO tratamientos(id_tratamiento, tratamiento)
+        VALUES (codigo, descripcion);
+    END IF;
+END;

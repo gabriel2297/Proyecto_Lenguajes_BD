@@ -6,10 +6,21 @@
 
         // si se quiere cargar de nuevo la tabla
         if($_POST['llave'] == "cargarTabla"){
+
+            // obtener todos los pacientes
             $datos = oci_parse($conn, "SELECT * FROM paciente");
             oci_execute ($datos);  
-            $num_rows = oci_parse($conn, "SELECT COUNT(*) FROM paciente");
-            oci_execute($num_rows);
+
+            // obtener cantidad de pacientes
+            $sql = oci_parse($conn, "SELECT COUNT(*) AS COUNT FROM paciente");
+            oci_execute($sql);
+
+            // convertir a arreglo asociativo
+            $res = oci_fetch_assoc($sql);
+
+            // obtener el valor guardado con la llave COUNT
+            $num_rows = $res["COUNT"];
+
             if($num_rows > 0){
                 while($data = oci_fetch_assoc ($datos)){
                     $sub_array['DT_RowId'] = $data['CEDULA'];
