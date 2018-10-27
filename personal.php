@@ -71,12 +71,13 @@
                             <th>Primer apellido</th>
                             <th>Segundo apellido</th>
                             <th>Teléfono</th>
+                            <th>Fecha de nacimiento</th>
                             <th>Correo</th>
                             <th>Departamento</th>
                             <th>Puesto</th>
                         </thead>
                         <tbody>
-
+                            
                         </tbody>
                     </table>
                 </div>
@@ -90,6 +91,15 @@
 		<footer>
             <p style="text-align: center">Diseño y desarrollo por LenguajesBD Proyecto &copy; 2018</p>
         </footer>
+
+        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
+        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js "></script>
+        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/responsive/2.2.3/js/responsive.bootstrap4.min.js"></script>
+        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/rowreorder/1.2.5/js/dataTables.rowReorder.min.js"></script>
+
+        <script type="text/javascript" src="javascript/empleados.js"></script>
 
     </body>
 </html>

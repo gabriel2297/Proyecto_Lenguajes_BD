@@ -41,27 +41,31 @@
                         <input type="email" class="form-control" id="correo" placeholder="Correo electronico del empleado">
                     </div>
                     <div class="form-group">
+                        <label for="fecha_nacimiento">Fecha de nacimiento</label>
+                        <input type="date" class="form-control" id="fecha_nacimiento" placeholder="Fecha de nacimiento del paciente">
+                    </div>
+                    <div class="form-group">
                         <label for="departamento">Departamento</label>
                         <select class="form-control" id="departamento" name="departamento">
-                            <option>Por implementar</option>
-                            <!-- <?php
-                                $datos = mysqli_query($conn, "SELECT tipo_carne FROM tipo_carnes;");
-                                while($fila = mysqli_fetch_array($datos)){
-                                    echo "<option>" . $fila['tipo_carne']. "</option>";
+                            <?php
+                                $datos_departamento = oci_parse($conn, "SELECT departamento FROM departamento");
+                                oci_execute ($datos_departamento);
+                                while($fila = oci_fetch_assoc ($datos_departamento)){
+                                    echo "<option>" . $fila['DEPARTAMENTO'] . "</option>";
                                 }
-                            ?> -->
+                            ?>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="trabajo">Puesto</label>
-                        <select class="form-control" id="trabajo" name="trabajo">
-                            <option>Por implementar</option>
-                            <!-- <?php
-                                $datos = mysqli_query($conn, "SELECT tipo_carne FROM tipo_carnes;");
-                                while($fila = mysqli_fetch_array($datos)){
-                                    echo "<option>" . $fila['tipo_carne']. "</option>";
+                        <label for="puesto">Puesto</label>
+                        <select class="form-control" id="puesto" name="puesto">
+                            <?php
+                                $datos = oci_parse($conn, "SELECT titulo_trabajo FROM trabajo");
+                                oci_execute($datos);
+                                while($fila = oci_fetch_assoc($datos)){
+                                    echo "<option>" . $fila['TITULO_TRABAJO']. "</option>";
                                 }
-                            ?> -->
+                            ?>
                         </select>
                     </div>
                 </div>
