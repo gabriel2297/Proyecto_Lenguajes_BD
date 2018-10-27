@@ -79,15 +79,11 @@ CREATE TABLE tipo_sala(
     tipo varchar2(30)
 );
 
-CREATE SEQUENCE tipo_sala_secuencia START WITH 1 INCREMENT BY 1;
-
 CREATE TABLE salas(
     num_salas number not null primary key,
     id_tipo number not null,
     constraint FK_ID_TIPO FOREIGN KEY(id_tipo)  REFERENCES tipo_sala(id_tipo) 
 );
-
-CREATE SEQUENCE num_salas_secuencia START WITH 1 INCREMENT BY 1;
 
 CREATE TABLE tipo_cita(
     id_tipo_cita number not null primary key,
@@ -108,6 +104,10 @@ CREATE TABLE cita(
     FOREIGN KEY(id_tipo_cita) references tipo_cita(id_tipo_cita)
 );
 
+/* SECUENCIAS DE AUTOINCREMENTO */
+CREATE SEQUENCE tipo_sala_secuencia START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE num_salas_secuencia START WITH 1 INCREMENT BY 1;
+
 /* INSERCION DE DATOS NECESARIOS */
 
 -- departamentos
@@ -123,6 +123,13 @@ INSERT INTO genero (id_genero, genero) VALUES ('F', 'Femenino');
 -- tipo de sangre
 INSERT INTO tipo_sangre (id_tipo, tipo) VALUES (1, 'O negativo');
 INSERT INTO tipo_sangre (id_tipo, tipo) VALUES (2, 'O positivo');
+
+-- salas
+INSERT INTO tipo_sala (id_tipo, tipo) VALUES (tipo_sala_secuencia.NEXTVAL, 'Consultorio');
+INSERT INTO tipo_sala (id_tipo, tipo) VALUES (tipo_sala_secuencia.NEXTVAL, 'Partos');
+INSERT INTO tipo_sala (id_tipo, tipo) VALUES (tipo_sala_secuencia.NEXTVAL, 'Almacen');
+INSERT INTO tipo_sala (id_tipo, tipo) VALUES (tipo_sala_secuencia.NEXTVAL, 'Habitacion');
+INSERT INTO tipo_sala (id_tipo, tipo) VALUES (tipo_sala_secuencia.NEXTVAL, 'Emergencias');
 
 /* PROCEDIMIENTOS ALMACENADOS */
 

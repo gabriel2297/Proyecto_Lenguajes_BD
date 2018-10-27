@@ -58,7 +58,7 @@
             </div>
             <div class="introduccion">
 			    <button type="submit" class="btn btn-outline-success pull-right" id="agregarTratamientoBtn" data-toggle="modal" data-target="#agregarTratamientoModal">Nuevo tratamiento</button>
-                <h5>Manejo de pacientes</h5>
+                <h5>Manejo de tratamientos</h5>
             </div>
             <div class="contenido">
                 <div id="resultados"></div>

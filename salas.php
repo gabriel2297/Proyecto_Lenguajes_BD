@@ -1,6 +1,8 @@
+<?php include 'php/config_bd.php'; ?>
+
 <!DOCTYPE html>
 <html>
-	<head>
+    <head>
 		<title>Lenguajes de bases de datos</title>
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,6 +15,13 @@
             <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
             <!-- Google fonts -->
             <link href="https://fonts.googleapis.com/css?family=Abel" rel="stylesheet"> 
+
+            <!-- Datatables info -->
+            <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/rowreorder/1.2.5/css/rowReorder.dataTables.min.css">
+            <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.bootstrap4.min.css">
+            <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css">
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/css/bootstrap.css">
+
             <!-- Nuestros estilos -->
             <link href="http://localhost/Proyecto_Lenguajes_BD/recursos/css/css.css" rel="stylesheet">
             <!-- font awesome library -->
@@ -41,34 +50,48 @@
             </nav> 	
         </div>
         <!-- Contenido de la pagina -->
-        <div class="container">
-            <h1 class="encabezado_h1">S  A  H</h1>
-            <h4 class="encabezado_h4">Sistema de Administración Hospitalaria</h4>
-            <hr/>
-            <div class="agregar_sala">
-                <h5>Agregar nueva sala</h5>
-                <form>
-                    <div class="form-group">
-                        <label for="tipo_sala">Tipo de sala</label>
-                        <select class="form-control" id="tipo_sala" name="tipo_sala">
-                            <option>Por implementar</option>
-                            <!-- <?php
-                                $datos = mysqli_query($conn, "SELECT tipo_carne FROM tipo_carnes;");
-                                while($fila = mysqli_fetch_array($datos)){
-                                    echo "<option>" . $fila['tipo_carne']. "</option>";
-                                }
-                            ?> -->
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary pull-right">Guardar sala</button>
-                </form>
+        <div class="container-fluid">
+            <div class="titulos">
+                <h1 class="encabezado_h1">S  A  H</h1>
+                <h4 class="encabezado_h4">Sistema de Administración Hospitalaria</h4>				
+                <hr/>
+            </div>
+            <div class="introduccion">
+			    <button type="submit" class="btn btn-outline-success pull-right" id="agregarSalaBtn" data-toggle="modal" data-target="#agregarSalaModal">Nueva sala</button>
+                <h5>Manejo de salas</h5>
+            </div>
+            <div class="contenido">
+                <div id="resultados"></div>
+                <hr/>
+                <div>
+                <table class="table table-hover dt-responsive nowrap" style="width:100%" id="tabla_salas">
+                        <thead>
+                            <th>Numero de sala</th>
+                            <th>Tipo de sala</th>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
+
+        <!-- Modal para agregar salas -->
+        <?php include("modals/agregarSalasModal.php");?>
 
         <!-- pie de pagina -->
 		<footer>
             <p style="text-align: center">Diseño y desarrollo por LenguajesBD Proyecto &copy; 2018</p>
         </footer>
 
+        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
+        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js "></script>
+        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/responsive/2.2.3/js/responsive.bootstrap4.min.js"></script>
+        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/rowreorder/1.2.5/js/dataTables.rowReorder.min.js"></script>
+
+        <script type="text/javascript" src="javascript/salas.js"></script>
     </body>
 </html>
