@@ -1,12 +1,11 @@
-# Proyecto_Lenguajes_BD
+# Sistema de Administración Hospitalaria - III Cuatrimestre 2018
 
 Proyecto final para el curso de Lenguajes de bases de datos en la Universidad Fidelitas. <br/>
 Estudiantes:
 <ul>
-	<li>Gabriel Umaña Frías</l
+	<li>Gabriel Umaña Frías</li>
 	<li>Juan Carlos Rodiguez Centeno</li>
 </ul>
-<br/>
 Desarrollado con:
 <ul>
 	<li>PHP</li>
