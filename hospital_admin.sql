@@ -75,7 +75,6 @@ CREATE TABLE empleado(
 );
 
 
-
 CREATE TABLE tipo_sala(
     id_tipo number not null primary key,
     tipo varchar2(30)
@@ -257,6 +256,3 @@ IS
 BEGIN
     INSERT INTO salas(num_salas, id_tipo) VALUES (num_salas_secuencia.NEXTVAL, id_tipo_sala);
 END;
-
-
-
