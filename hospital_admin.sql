@@ -74,6 +74,8 @@ CREATE TABLE empleado(
     CONSTRAINT FK_ID_TRABAJO FOREIGN KEY (id_trabajo) REFERENCES trabajo(id_trabajo)
 );
 
+
+
 CREATE TABLE tipo_sala(
     id_tipo number not null primary key,
     tipo varchar2(30)
@@ -111,10 +113,13 @@ CREATE SEQUENCE num_salas_secuencia START WITH 1 INCREMENT BY 1;
 /* INSERCION DE DATOS NECESARIOS */
 
 -- departamentos
-INSERT INTO departamento (id_departamento, departamento) VALUES (1, 'HR');
+INSERT INTO departamento (id_departamento, departamento) VALUES (1, 'Admin');
+INSERT INTO departamento (id_departamento, departamento) VALUES (2, 'Medicina');
 
 -- trabajos
-INSERT INTO trabajo (id_trabajo, titulo_trabajo) VALUES (1, 'Reclutador');
+INSERT INTO trabajo (id_trabajo, titulo_trabajo) VALUES (1, 'Secretariado');
+INSERT INTO trabajo (id_trabajo, titulo_trabajo) VALUES (2, 'Medico general');
+
 
 -- generos
 INSERT INTO genero (id_genero, genero) VALUES ('M', 'Masculino');
