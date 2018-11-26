@@ -148,8 +148,8 @@ CREATE OR REPLACE PROCEDURE agregar_paciente(
     peso_paciente IN NUMBER,
     altura_paciente IN NUMBER)
 IS
--- declarar variables
-total NUMBER;
+    -- declarar variables
+    total NUMBER;
 BEGIN
     -- revisar si ya existe alguien con esa cedula
     total := 0;
@@ -174,7 +174,7 @@ BEGIN
                 apellido1_paciente,
                 apellido2_paciente,
                 telefono_paciente,
-                TO_DATE(fecha_nacimiento_pac, 'DD-MM-YYYY'),
+                TO_DATE(fecha_nacimiento_paciente, 'DD-MM-YYYY'),
                 correo_electronico_paciente,
                 telefono_sos_paciente,
                 id_tipo_sangre_paciente,
