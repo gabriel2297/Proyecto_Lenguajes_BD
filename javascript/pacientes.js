@@ -36,7 +36,6 @@ var cargarTabla = function(){
     });
 }
 
-
 function guardarPaciente(llave){
     var cedula = $("#cedula");
     var nombre = $("#nombre");
@@ -82,7 +81,7 @@ function guardarPaciente(llave){
             }
             else{
                 $("#resultados").addClass("alert alert-danger");
-                $("#resultados").html("Ocurrió un error, por favor intentelo de nuevo. Si vuelve a pasar comuníquese a soporte@pizzahotml.com");
+                $("#resultados").html("Ocurrió un error, por favor intentelo de nuevo. Si vuelve a pasar comuníquese a soporte@adminSAH.com");
                 $("#resultados").delay(5000).fadeOut(function(){
                     $(this).removeClass("alert alert-danger");
                     $(this).html("");

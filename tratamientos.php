@@ -41,10 +41,10 @@
                 <!-- links del navbar -->
                 <div class="collapse navbar-collapse" id="links">
                     <ul class="navbar-nav">
-                        <li><a class="nav-link active" href="#">Pacientes</a></li>
+                        <li><a class="nav-link" href="pacientes.php">Pacientes</a></li>
                         <li><a class="nav-link" href="personal.php">Personal</a></li>
                         <li><a class="nav-link" href="salas.php">Salas</a></li>
-                        <li><a class="nav-link" href="tratamientos.php">Tratamientos</a></li>
+                        <li><a class="nav-link active" href="#">Tratamientos</a></li>
                     </ul>
                 </div>
             </nav> 	
@@ -57,27 +57,17 @@
                 <hr/>
             </div>
             <div class="introduccion">
-			    <button type="submit" class="btn btn-outline-success pull-right" id="agregarPacienteBtn" data-toggle="modal" data-target="#agregarPacienteModal">Nuevo paciente</button>
-                <h5>Manejo de pacientes</h5>
+			    <button type="submit" class="btn btn-outline-success pull-right" id="agregarTratamientoBtn" data-toggle="modal" data-target="#agregarTratamientoModal">Nuevo tratamiento</button>
+                <h5>Manejo de tratamientos</h5>
             </div>
             <div class="contenido">
                 <div id="resultados"></div>
                 <hr/>
                 <div>
-                <table class="table table-hover dt-responsive nowrap" style="width:100%" id="tabla_pacientes">
+                <table class="table table-hover dt-responsive nowrap" style="width:100%" id="tabla_tratamientos">
                         <thead>
-                            <th>Cedula</th>
-                            <th>Nombre</th>
-                            <th>Primer apellido</th>
-                            <th>Segundo apellido</th>
-                            <th>Teléfono</th>
-                            <th>Fecha nacimiento</th>
-                            <th>Correo</th>
-                            <th>Telefono SOS</th>
-                            <th>Tipo de sangre</th>
-                            <th>Género</th>
-                            <th>Peso</th>
-                            <th>Altura</th>
+                            <th>Codigo</th>
+                            <th>Tratamiento</th>
                         </thead>
                         <tbody>
 
@@ -87,8 +77,8 @@
             </div>
         </div>
 
-        <!-- Modal para agregar pacientes -->
-        <?php include("modals/agregarPacienteModal.php");?>
+        <!-- Modal para agregar tratamientos -->
+        <?php include("modals/agregarTratamientoModal.php");?>
 
         <!-- pie de pagina -->
 		<footer>
@@ -102,7 +92,7 @@
         <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/responsive/2.2.3/js/responsive.bootstrap4.min.js"></script>
         <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/rowreorder/1.2.5/js/dataTables.rowReorder.min.js"></script>
 
-        <script type="text/javascript" src="javascript/pacientes.js"></script>
+        <script type="text/javascript" src="javascript/tratamientos.js"></script>
 
     </body>
 </html>

@@ -7,12 +7,12 @@
         // si se quiere cargar de nuevo la tabla
         if($_POST['llave'] == "cargarTabla"){
 
-            // obtener todos los pacientes
-            $datos = oci_parse($conn, "SELECT * FROM paciente");
+            // obtener todos los empleados
+            $datos = oci_parse($conn, "SELECT * FROM empleado");
             oci_execute ($datos);  
 
-            // obtener cantidad de pacientes
-            $sql = oci_parse($conn, "SELECT COUNT(*) AS COUNT FROM paciente");
+            // obtener cantidad de empleados
+            $sql = oci_parse($conn, "SELECT COUNT(*) AS COUNT FROM empleado");
             oci_execute($sql);
 
             // convertir a arreglo asociativo
@@ -31,27 +31,24 @@
                     $sub_array['telefono'] = $data['TELEFONO'];
                     $sub_array['fecha_nacimiento'] = $data['FECHA_NACIMIENTO'];
                     $sub_array['correo'] = $data['CORREO_ELECTRONICO'];
-                    $sub_array['telefono_sos'] = $data['TELEFONO_SOS'];
-                    // buscar el genero en base del id del paciente
-                    $datos_sangre = oci_parse($conn, "SELECT * FROM genero");
-                    oci_execute ($datos_sangre);
-                    while($fila = oci_fetch_assoc ($datos_sangre)){
-                        if($data['ID_GENERO'] == $fila["ID_GENERO"]){
-                            $sub_array['genero'] = $fila['GENERO'];
+                    // buscar el departamento en base del id del departamento
+                    $datos_departamento = oci_parse($conn, "SELECT * FROM departamento");
+                    oci_execute ($datos_departamento);
+                    while($fila = oci_fetch_assoc ($datos_departamento)){
+                        if($data['ID_DEPARTAMENTO'] == $fila["ID_DEPARTAMENTO"]){
+                            $sub_array['departamento'] = $fila['DEPARTAMENTO'];
                             break;
                         }
                     }
-                    // lo mismo para la sangre
-                    $datos_genero = oci_parse($conn, "SELECT * FROM tipo_sangre");
-                    oci_execute ($datos_genero);
-                    while($fila = oci_fetch_assoc ($datos_genero)){
-                        if($data['ID_TIPO_SANGRE'] == $fila["ID_TIPO"]){
-                            $sub_array['tipo_sangre'] = $fila['TIPO'];
+                    // lo mismo para puesto
+                    $datos_trabajo = oci_parse($conn, "SELECT * FROM trabajo");
+                    oci_execute ($datos_trabajo);
+                    while($fila = oci_fetch_assoc ($datos_trabajo)){
+                        if($data['ID_TRABAJO'] == $fila["ID_TRABAJO"]){
+                            $sub_array['puesto'] = $fila['TITULO_TRABAJO'];
                             break;
                         }
                     }
-                    $sub_array['peso'] = $data['PESO'];
-                    $sub_array['altura'] = $data['ALTURA'];
                     $arreglo['data'][] = $sub_array;
                 }
                 echo json_encode($arreglo);
@@ -64,38 +61,35 @@
         }
 
         // si es guardar un paciente
-        if($_POST['llave'] == "guardarPaciente"){
+        if($_POST['llave'] == "guardarEmpleado"){
             $cedula = $_POST['cedula'];
             $nombre = $_POST['nombre'];
             $apellido1 = $_POST['apellido1'];
             $apellido2 = $_POST['apellido2'];
             $telefono = $_POST['telefono'];
-            $fecha_nacimiento = $_POST['fecha_nacimiento'];
             $correo = $_POST['correo'];
-            $telefono_sos = $_POST['telefono_sos'];
-            $tipo_sangre = $_POST['tipo_sangre'];
-            $genero = $_POST['genero'];
-            $peso = $_POST['peso'];
-            $altura = $_POST['altura'];
+            $fecha_nacimiento = $_POST['fecha_nacimiento'];
+            $departamento = $_POST['departamento'];
+            $puesto = $_POST['puesto'];
 
-            // buscar el id del genero que fue seleccionado
-            $id_genero = "";
-            $datos = oci_parse($conn, "SELECT * FROM genero");
+            // buscar el id del departamento que fue seleccionado
+            $id_departamento = "";
+            $datos = oci_parse($conn, "SELECT * FROM departamento");
             oci_execute ($datos);
             while($fila = oci_fetch_assoc ($datos)){
-                if($genero == $fila["GENERO"]){
-                    $id_genero = $fila["ID_GENERO"];
+                if($departamento == $fila["DEPARTAMENTO"]){
+                    $id_departamento = $fila["ID_DEPARTAMENTO"];
                     break;
                 }
             }
 
-            // lo mismo para la sangre
-            $id_tipo_sangre = 0;
-            $datos = oci_parse($conn, "SELECT * FROM tipo_sangre");
+            // lo mismo para el puesto
+            $id_puesto = 0;
+            $datos = oci_parse($conn, "SELECT * FROM trabajo");
             oci_execute ($datos);
             while($fila = oci_fetch_assoc ($datos)){
-                if($tipo_sangre == $fila["TIPO"]){
-                    $id_tipo_sangre = $fila["ID_TIPO"];
+                if($puesto == $fila["TITULO_TRABAJO"]){
+                    $id_puesto = $fila["ID_TRABAJO"];
                     break;
                 }
             }
@@ -104,18 +98,15 @@
             $fecha_nacimiento = date('d-m-Y', strtotime($fecha_nacimiento));
 
             // crear llamada al procedimiento almacenado 
-            $sql = "BEGIN agregar_paciente(:cedula,
+            $sql = "BEGIN agregar_empleado(:cedula,
                                            :nombre,
                                            :apellido1,
                                            :apellido2,
                                            :telefono,
                                            :fecha_nacimiento,
                                            :correo,
-                                           :telefono_sos,
-                                           :id_tipo_sangre,
-                                           :id_genero,
-                                           :peso,
-                                           :altura); 
+                                           :id_departamento,
+                                           :id_puesto); 
                     END;";
             
             // crear un query que junte la conexion a la BD con lo que se va a ejecutar, 
@@ -128,13 +119,10 @@
             oci_bind_by_name($query, ":apellido1", $apellido1);
             oci_bind_by_name($query, ":apellido2", $apellido2);
             oci_bind_by_name($query, ":telefono", $telefono);
-            oci_bind_by_name($query, ":fecha_nacimiento", $fecha_nacimiento);
             oci_bind_by_name($query, ":correo", $correo);
-            oci_bind_by_name($query, ":telefono_sos", $telefono_sos);
-            oci_bind_by_name($query, ":id_tipo_sangre", $id_tipo_sangre);
-            oci_bind_by_name($query, ":id_genero", $id_genero);
-            oci_bind_by_name($query, ":peso", $peso);
-            oci_bind_by_name($query, ":altura", $altura);
+            oci_bind_by_name($query, ":fecha_nacimiento", $fecha_nacimiento);
+            oci_bind_by_name($query, ":id_departamento", $id_departamento);
+            oci_bind_by_name($query, ":id_puesto", $id_puesto);
 
             // ejecutar el procedimiento almacenado 
             if(oci_execute($query)){
