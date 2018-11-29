@@ -6,9 +6,9 @@ CREATE TABLE genero(
 );
 
 CREATE TABLE tipo_sangre(
-    id_tipo NUMBER NOT NULL PRIMARY KEY,
-    tipo VARCHAR2(15) NOT NULL,
-    CONSTRAINT UNIQUE_TIPO UNIQUE (tipo)
+    sang_id_tipo NUMBER NOT NULL PRIMARY KEY,
+    sang_tipo VARCHAR2(15) NOT NULL,
+    CONSTRAINT UNIQUE_TIPO UNIQUE (sang_tipo)
 );
 
 CREATE TABLE tratamientos(
@@ -17,8 +17,7 @@ CREATE TABLE tratamientos(
     fecha_receta DATE NOT NULL,
     CONSTRAINT UNIQUE_TRATAMIENTO UNIQUE (tratamiento)
 );
-
-CREATE TABLE paciente(
+create TABLE paciente(
     cedula VARCHAR2(12) NOT NULL PRIMARY KEY,
     nombre VARCHAR2(30) NOT NULL,
     apellido1 VARCHAR2(30) NOT NULL,
@@ -49,6 +48,8 @@ CREATE TABLE paciente_x_tratamiento(
 
 
 INSERT INTO genero (id_genero, genero) VALUES ('M', 'Masculino');
+INSERT INTO genero (id_genero, genero) VALUES ('F', 'Femenino');
+
 
 
 
@@ -64,13 +65,13 @@ titulo_trabajo varchar2(30)
 
 
 CREATE TABLE empleado(
-    cedula VARCHAR2(12) NOT NULL PRIMARY KEY,
-    nombre VARCHAR2(30) NOT NULL,
-    apellido1 VARCHAR2(30) NOT NULL,
-    apellido2 VARCHAR2(30) NOT NULL,
-    telefono VARCHAR2(9) NOT NULL,
-    correo_electronico VARCHAR2(100) NOT NULL,
-    fecha_nacimiento DATE NOT NULL,
+    ecedula VARCHAR2(12) NOT NULL PRIMARY KEY,
+    enombre VARCHAR2(30) NOT NULL,
+    eapellido1 VARCHAR2(30) NOT NULL,
+    eapellido2 VARCHAR2(30) NOT NULL,
+    etelefono VARCHAR2(9) NOT NULL,
+    ecorreo_electronico VARCHAR2(100) NOT NULL,
+    efecha_nacimiento DATE NOT NULL,
     id_departamento number not null,
     id_trabajo number not null,
       
@@ -87,7 +88,6 @@ CREATE TABLE tipo_sala(
 id_tipo number not null primary key,
 tipo varchar2(30)
 );
-
 
 
 
@@ -115,7 +115,7 @@ id_tipo_cita number not null,
 
 
  FOREIGN KEY(cedula_paciente) REFERENCES paciente(cedula),
- FOREIGN KEY(cedula_empleado) REFERENCES empleado(cedula),
+ FOREIGN KEY(cedula_empleado) REFERENCES empleado(ecedula),
  FOREIGN KEY(num_sala) REFERENCES salas(num_salas),
  FOREIGN KEY(id_tipo_cita) references tipo_cita(id_tipo_cita)
 
@@ -134,6 +134,37 @@ INSERT INTO genero (id_genero, genero) VALUES ('F', 'Femenino');
 INSERT INTO tipo_sangre (id_tipo, tipo) VALUES (1, 'O negativo');
 INSERT INTO tipo_sangre (id_tipo, tipo) VALUES (2, 'O positivo');
 
+--departamentos
+INSERT INTO departamento (id_departamento,departamento) VALUES (1, 'Dermatología');
+INSERT INTO departamento (id_departamento,departamento) VALUES (2, 'Ginecología');
+--trabajo
+INSERT INTO trabajo (id_trabajo,titulo_trabajo) VALUES (1, 'Médico');
+INSERT INTO trabajo (id_trabajo,titulo_trabajo) VALUES (2, 'Técnico');
+INSERT INTO trabajo (id_trabajo,titulo_trabajo) VALUES (3, 'Asistente');
+
+--Tipo sala
+INSERT INTO tipo_sala (id_tipo, tipo) VALUES (200, 'Transplantes');
+INSERT INTO tipo_sala (id_tipo, tipo) VALUES (201, 'Cirugía');
+INSERT INTO tipo_sala (id_tipo, tipo) VALUES (202, 'Partos');
+
+--Salas
+INSERT INTO salas (num_salas, id_tipo) VALUES (1, 200);
+INSERT INTO salas (num_salas, id_tipo) VALUES (2, 201);
+INSERT INTO salas (num_salas, id_tipo) VALUES (3, 202);
+
+--tipo_cita
+INSERT INTO tipo_cita (id_tipo_cita, tipo_cita) VALUES (1, 'Consulta');
+INSERT INTO tipo_cita (id_tipo_cita, tipo_cita) VALUES (2, 'Revision General');
+INSERT INTO tipo_cita (id_tipo_cita, tipo_cita) VALUES (3, 'Seguimiento');
+
+--
+
+
+
+
+
+
+
 /* PROCEDIMIENTOS ALMACENADOS */
 CREATE OR REPLACE PROCEDURE agregar_paciente(
     cedula IN VARCHAR2,
@@ -150,6 +181,9 @@ CREATE OR REPLACE PROCEDURE agregar_paciente(
     altura IN NUMBER)
 IS
 -- declarar variables
+  VERROR NUMBER;
+  VEXP exception;
+VMES VARCHAR2(500);
 total NUMBER;
 BEGIN
     -- revisar si ya existe alguien con esa cedula
@@ -182,8 +216,163 @@ BEGIN
                 id_genero,
                 peso,
                 altura);
+    
+   ELSE
+   raise vexp;
     END IF;
+    exception
+    WHEN VEXP THEN
+       VERROR := SQLCODE;
+       VMES := 'El Paciente ya existe ';
+       INSERT INTO AUDITORIA ( NERROR, MENSAJE, FECHA, USUARIO) 
+             VALUES(VERROR,VMES,SYSDATE, USER);
+
+  WHEN  OTHERS  THEN
+       VERROR := SQLCODE;
+       VMES := SQLERRM;
+                     dbms_output.put_line(VMES);
+       INSERT INTO AUDITORIA ( NERROR, MENSAJE, FECHA, USUARIO ) 
+                   VALUES(VERROR,VMES,SYSDATE, USER);    
 END;
-a5cf9e69ac50e197c9955844d4c8460061b8db06
+
+
+execute agregar_paciente('11-0723-0822','Pepe','Rodriguez','Centeno','8401-9915','14/10/1998','Juan1958@hotmail.com','2262-7879',1,'M',65,175);
+
+/*Tabla de Auditorias*/
+CREATE TABLE AUDITORIA ( NERROR NUMBER,
+MENSAJE  VARCHAR2(500), 
+FECHA DATE ,
+USUARIO VARCHAR2(50));
+
+
+
+
+
+
+
+select * from auditoria
+
+
+select * from genero
+
+--Agregar empleado
+CREATE OR REPLACE PROCEDURE agregar_empleado(
+ecedula in varchar2,
+enombre in VARCHAR2,
+eapellido1 in varchar2,
+eapellido2 in VARCHAR2,
+etelefono VARCHAR2,
+ecorreo_electronico in VARCHAR2,
+efecha_nacimiento in varchar2,
+id_departamento in number,
+id_trabajo in number)
+as
+VERROR NUMBER;
+VMES VARCHAR2(500);
+total NUMBER;
+VEXP exception;
+begin
+total := 0;
+    SELECT COUNT(*) INTO total FROM empleado WHERE cedula = ecedula;
+     IF total = 0 THEN
+        INSERT INTO empleado(cedula,
+                             nombre,
+                             apellido1,
+                             apellido2,
+                             telefono,
+                             correo_electronico,
+                             fecha_nacimiento,
+                             id_departamento,
+                             id_trabajo)
+        VALUES (ecedula,
+                enombre,
+                eapellido1,
+                eapellido2,
+                etelefono,
+                ecorreo_electronico,
+                TO_DATE(efecha_nacimiento, 'DD-MM-YYYY'),
+                id_departamento,
+                id_trabajo);
+   ELSE
+   raise VEXP;
+    END IF;
+    exception
+    when VEXP then
+    VERROR := SQLCODE;
+       VMES := 'El empleado ya esta registrado en la base de datos';
+                     dbms_output.put_line(VMES);
+       INSERT INTO AUDITORIA ( NERROR, MENSAJE, FECHA, USUARIO ) 
+                   VALUES(VERROR,VMES,SYSDATE, USER);   
+  WHEN  OTHERS  THEN
+       VERROR := SQLCODE;
+       VMES := SQLERRM;
+       INSERT INTO AUDITORIA ( NERROR, MENSAJE, FECHA, USUARIO ) 
+                   VALUES(VERROR,VMES,SYSDATE, USER);    
+END;
+
+
+execute agregar_empleado('11-0743-0982','Andres','Escalante','Armadillo','7698-0232','Escalante.9874@gmail.com','19/07/1980',1,1)
+
+/*Agregar cita*/
+create or replace procedure crear_cita(vid_cita in number,
+                                        cedulaP in varchar2,
+                                        cedulaE in varchar2,
+                                        numSala in number,
+                                        fechaH in varchar2,
+                                        observ in varchar2,
+                                        idTipoCita in number )
+
+
+as
+ VERROR NUMBER;
+  VEXP exception;
+VMES VARCHAR2(500);
+total NUMBER;
+cont number;
+BEGIN
+    -- revisar si ya existe alguien con esa cedula
+    total := 0;
+    SELECT COUNT(*) INTO total FROM cita WHERE id_cita = vid_cita;
+    SELECT COUNT(id_cita) INTO cont FROM cita ;
+
+    -- si no, agregar a la persona
+    IF total = 0 THEN
+    cont:=cont+1;
+        INSERT INTO cita(id_cita,
+                             cedula_paciente,
+                             cedula_empleado,
+                             num_sala,
+                             fecha_hora,
+                             observaciones,
+                             id_tipo_cita)
+                             
+        VALUES (cont,
+                cedulaP,
+                cedulaE,
+                numSala,
+                TO_DATE(fechah, 'DD-MM-YYYY'),
+                observ,
+                idTipoCita);
+                
+    
+   ELSE
+    raise  VEXP;
+    END IF;
+    exception
+    WHEN VEXP THEN
+              dbms_output.put_line(VMES);
+       VERROR := SQLCODE;
+       VMES := 'La cita ya existe en la base de datos ';
+       INSERT INTO AUDITORIA ( NERROR, MENSAJE, FECHA, USUARIO) 
+             VALUES(VERROR,VMES,SYSDATE, USER);
+
+  WHEN  OTHERS  THEN
+       VERROR := SQLCODE;
+       VMES := SQLERRM;
+                     dbms_output.put_line(VMES);
+       INSERT INTO AUDITORIA ( NERROR, MENSAJE, FECHA, USUARIO ) 
+                   VALUES(VERROR,VMES,SYSDATE, USER);    
+END;
+
 
 
