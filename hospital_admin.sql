@@ -296,8 +296,6 @@ create or replace procedure crear_cita(vid_cita in number,
                                         fechaH in varchar2,
                                         observ in varchar2,
                                         idTipoCita in number)
-
-
 as
 	VERROR NUMBER;
 	VEXP exception;
@@ -328,8 +326,6 @@ BEGIN
                 TO_DATE(fechah, 'DD-MM-YYYY'),
                 observ,
                 idTipoCita);
-                
-    
    ELSE
     raise  VEXP;
     END IF;
