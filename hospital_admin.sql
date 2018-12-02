@@ -1,3 +1,8 @@
+SET SERVEROUTPUT ON;
+
+-- para que aparezca la hora y minutos
+alter session set nls_date_format = 'dd/MON/yyyy hh24:mi:ss'
+
 /* CREACION DE TABLAS */
 CREATE TABLE genero(
     id_genero VARCHAR2(1) NOT NULL PRIMARY KEY,
@@ -16,7 +21,8 @@ CREATE TABLE tratamientos(
     tratamiento VARCHAR2(30) NOT NULL,
     CONSTRAINT UNIQUE_TRATAMIENTO UNIQUE (tratamiento)
 );
-create TABLE paciente(
+
+CREATE TABLE paciente(
     cedula VARCHAR2(12) NOT NULL PRIMARY KEY,
     nombre VARCHAR2(30) NOT NULL,
     apellido1 VARCHAR2(30) NOT NULL,
@@ -33,7 +39,7 @@ create TABLE paciente(
     CONSTRAINT CHK_TELEFONO CHECK (REGEXP_LIKE(telefono, '^[0-9]{4}(-)[0-9]{4}$')),
     CONSTRAINT CHK_CORREO CHECK (REGEXP_LIKE(correo_electronico, '^.+@[a-z]+(\.com)$')),
     CONSTRAINT CHK_TELEFONO_SOS CHECK (REGEXP_LIKE(telefono_sos, '^[0-9]{4}(-)[0-9]{4}')),
-    CONSTRAINT FK_ID_TIPO_SANGRE FOREIGN KEY (id_tipo_sangre) REFERENCES tipo_sangre(id_tipo),
+    CONSTRAINT FK_ID_TIPO_SANGRE FOREIGN KEY (id_tipo_sangre) REFERENCES tipo_sangre(sang_id_tipo),
     CONSTRAINT FK_ID_GENERO FOREIGN KEY (id_genero) REFERENCES genero(id_genero)
 );
 
@@ -45,9 +51,6 @@ CREATE TABLE paciente_x_tratamiento(
     CONSTRAINT FK_CEDULA_PACIENTE FOREIGN KEY (cedula) REFERENCES paciente(cedula),
     CONSTRAINT CK_ID_TRATAMIENTO_X_CEDULA PRIMARY KEY (id_tratamiento, cedula)
 );
-
-INSERT INTO genero (id_genero, genero) VALUES ('M', 'Masculino');
-INSERT INTO genero (id_genero, genero) VALUES ('F', 'Femenino');
 
 CREATE TABLE departamento(
     id_departamento number not null primary key,
@@ -69,9 +72,9 @@ CREATE TABLE empleado(
     efecha_nacimiento DATE NOT NULL,
     id_departamento number not null,
     id_trabajo number not null,
-    CONSTRAINT EHK_CEDULA CHECK (REGEXP_LIKE(cedula, '^[0-1][1-7](-)[0-9]{4}(-)[0-9]{4}$')),
-    CONSTRAINT EHK_TELEFONO CHECK (REGEXP_LIKE(telefono, '^[0-9]{4}(-)[0-9]{4}$')),
-    CONSTRAINT EHK_CORREO CHECK (REGEXP_LIKE(correo_electronico, '^.+@[a-z]+(\.com)$')),
+    CONSTRAINT EHK_CEDULA CHECK (REGEXP_LIKE(ecedula, '^[0-1][1-7](-)[0-9]{4}(-)[0-9]{4}$')),
+    CONSTRAINT EHK_TELEFONO CHECK (REGEXP_LIKE(etelefono, '^[0-9]{4}(-)[0-9]{4}$')),
+    CONSTRAINT EHK_CORREO CHECK (REGEXP_LIKE(ecorreo_electronico, '^.+@[a-z]+(\.com)$')),
     CONSTRAINT FK_ID_DEPARTAMENTO FOREIGN KEY (id_departamento) REFERENCES departamento(id_departamento),
     CONSTRAINT FK_ID_TRABAJO FOREIGN KEY (id_trabajo) REFERENCES trabajo(id_trabajo)
 );
@@ -102,7 +105,7 @@ CREATE TABLE cita(
     observaciones varchar2(200),
     id_tipo_cita number not null,
     FOREIGN KEY(cedula_paciente) REFERENCES paciente(cedula),
-    FOREIGN KEY(cedula_empleado) REFERENCES empleado(cedula),
+    FOREIGN KEY(cedula_empleado) REFERENCES empleado(ecedula),
     FOREIGN KEY(num_sala) REFERENCES salas(num_salas),
     FOREIGN KEY(id_tipo_cita) references tipo_cita(id_tipo_cita)
 );
@@ -117,6 +120,7 @@ CREATE TABLE auditoria(
 /* SECUENCIAS DE AUTOINCREMENTO */
 CREATE SEQUENCE tipo_sala_secuencia START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE num_salas_secuencia START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE num_cita_secuencia START WITH 1 INCREMENT BY 1;
 
 /* INSERCION DE DATOS NECESARIOS */
 
@@ -125,8 +129,8 @@ INSERT INTO genero (id_genero, genero) VALUES ('M', 'Masculino');
 INSERT INTO genero (id_genero, genero) VALUES ('F', 'Femenino');
 
 -- tipo de sangre
-INSERT INTO tipo_sangre (id_tipo, tipo) VALUES (1, 'O negativo');
-INSERT INTO tipo_sangre (id_tipo, tipo) VALUES (2, 'O positivo');
+INSERT INTO tipo_sangre (sang_id_tipo, sang_tipo) VALUES (1, 'O negativo');
+INSERT INTO tipo_sangre (sang_id_tipo, sang_tipo) VALUES (2, 'O positivo');
 
 --departamentos
 INSERT INTO departamento (id_departamento,departamento) VALUES (1, 'Dermatología');
@@ -143,9 +147,9 @@ INSERT INTO tipo_sala (id_tipo, tipo) VALUES (tipo_sala_secuencia.NEXTVAL, 'Ciru
 INSERT INTO tipo_sala (id_tipo, tipo) VALUES (tipo_sala_secuencia.NEXTVAL, 'Partos');
 
 --Salas
-INSERT INTO salas (num_salas, id_tipo) VALUES (num_salas_secuencia.NEXTVAL, 200);
-INSERT INTO salas (num_salas, id_tipo) VALUES (num_salas_secuencia.NEXTVAL, 201);
-INSERT INTO salas (num_salas, id_tipo) VALUES (num_salas_secuencia.NEXTVAL, 202);
+INSERT INTO salas (num_salas, id_tipo) VALUES (num_salas_secuencia.NEXTVAL, 1);
+INSERT INTO salas (num_salas, id_tipo) VALUES (num_salas_secuencia.NEXTVAL, 2);
+INSERT INTO salas (num_salas, id_tipo) VALUES (num_salas_secuencia.NEXTVAL, 3);
 
 --tipo_cita
 INSERT INTO tipo_cita (id_tipo_cita, tipo_cita) VALUES (1, 'Consulta');
@@ -180,7 +184,6 @@ IS
 	VERROR NUMBER;
 	VEXP exception;
 	VMES VARCHAR2(500);
-	total NUMBER;
     total NUMBER;
 BEGIN
     -- revisar si ya existe alguien con esa cedula
@@ -232,13 +235,13 @@ execute agregar_paciente('11-0723-0822','Pepe','Rodriguez','Centeno','8401-9915'
 
 --Agregar empleado
 CREATE OR REPLACE PROCEDURE agregar_empleado(
-	ecedula in varchar2,
-	enombre in VARCHAR2,
-	eapellido1 in varchar2,
-	eapellido2 in VARCHAR2,
-	etelefono VARCHAR2,
-	ecorreo_electronico in VARCHAR2,
-	efecha_nacimiento in varchar2,
+	cedula in varchar2,
+	nombre in VARCHAR2,
+	apellido1 in varchar2,
+	apellido2 in VARCHAR2,
+	telefono VARCHAR2,
+	correo_electronico in VARCHAR2,
+	fecha_nacimiento in varchar2,
 	id_departamento in number,
 	id_trabajo in number)
 as
@@ -248,24 +251,24 @@ as
 	VEXP exception;
 begin
 	total := 0;
-    SELECT COUNT(*) INTO total FROM empleado WHERE cedula = ecedula;
+    SELECT COUNT(*) INTO total FROM empleado WHERE ecedula = cedula;
      IF total = 0 THEN
-        INSERT INTO empleado(cedula,
-                             nombre,
-                             apellido1,
-                             apellido2,
-                             telefono,
-                             correo_electronico,
-                             fecha_nacimiento,
+        INSERT INTO empleado(ecedula,
+                             enombre,
+                             eapellido1,
+                             eapellido2,
+                             etelefono,
+                             ecorreo_electronico,
+                             efecha_nacimiento,
                              id_departamento,
                              id_trabajo)
-        VALUES (ecedula,
-                enombre,
-                eapellido1,
-                eapellido2,
-                etelefono,
-                ecorreo_electronico,
-                TO_DATE(efecha_nacimiento, 'DD-MM-YYYY'),
+        VALUES (cedula,
+                nombre,
+                apellido1,
+                apellido2,
+                telefono,
+                correo_electronico,
+                TO_DATE(fecha_nacimiento, 'DD-MM-YYYY'),
                 id_departamento,
                 id_trabajo);
    ELSE
@@ -286,11 +289,10 @@ begin
 END;
 
 
-execute agregar_empleado('11-0743-0982','Andres','Escalante','Armadillo','7698-0232','Escalante.9874@gmail.com','19/07/1980',1,1)
+execute agregar_empleado('11-0743-0982','Andres','Escalante','Armadillo','7698-0232','Escalante.9874@gmail.com','19/07/1980',1,1);
 
 /*Agregar cita*/
-create or replace procedure crear_cita(vid_cita in number,
-                                        cedulaP in varchar2,
+create or replace procedure crear_cita( cedulaP in varchar2,
                                         cedulaE in varchar2,
                                         numSala in number,
                                         fechaH in varchar2,
@@ -303,27 +305,24 @@ as
 	total NUMBER;
 	cont number;
 BEGIN
-    -- revisar si ya existe alguien con esa cedula
+    -- revisar si ya existe alguna cita en ese consultorio a esa hora
     total := 0;
-    SELECT COUNT(*) INTO total FROM cita WHERE id_cita = vid_cita;
-    SELECT COUNT(id_cita) INTO cont FROM cita ;
+    SELECT COUNT(*) INTO total FROM cita WHERE fecha_hora = TO_DATE(fechaH,  'DD-MM-YYYY HH24:MI') AND num_sala = numSala;
 
-    -- si no, agregar a la persona
+    -- no hay citas a esa hora en ese consultorio, agregar a la persona
     IF total = 0 THEN
-    cont:=cont+1;
         INSERT INTO cita(id_cita,
                              cedula_paciente,
                              cedula_empleado,
                              num_sala,
                              fecha_hora,
                              observaciones,
-                             id_tipo_cita)
-                             
-        VALUES (cont,
+                             id_tipo_cita) 
+        VALUES (num_cita_secuencia.NEXTVAL,
                 cedulaP,
                 cedulaE,
                 numSala,
-                TO_DATE(fechah, 'DD-MM-YYYY'),
+                TO_DATE(fechah, 'DD-MM-YYYY HH24:MI'),
                 observ,
                 idTipoCita);
    ELSE
@@ -333,7 +332,7 @@ BEGIN
     WHEN VEXP THEN
               dbms_output.put_line(VMES);
        VERROR := SQLCODE;
-       VMES := 'La cita ya existe en la base de datos ';
+       VMES := 'Ya hay una cita programada para esa hora en el consultorio indicado';
        INSERT INTO AUDITORIA ( NERROR, MENSAJE, FECHA, USUARIO) 
              VALUES(VERROR,VMES,SYSDATE, USER);
 
@@ -344,6 +343,10 @@ BEGIN
        INSERT INTO AUDITORIA ( NERROR, MENSAJE, FECHA, USUARIO ) 
                    VALUES(VERROR,VMES,SYSDATE, USER);    
 END;
+
+EXECUTE crear_cita('11-0723-0822', '11-0743-0982', 3, '01-01-2018 15:00', 'Cita', 1);
+
+select * from cita;
 
 -- procedimient almacenado para guardar un tratamiento
 CREATE OR REPLACE PROCEDURE agregar_tratamiento(
@@ -365,51 +368,53 @@ BEGIN
     END IF;
 END;
 
--- procedimiento almacenado para guardar un empleado
-CREATE OR REPLACE PROCEDURE agregar_empleado(
-    cedula_empleado IN VARCHAR2,
-    nombre_empleado IN VARCHAR2,
-    apellido1_empleado IN VARCHAR2,
-    apellido2_empleado IN VARCHAR2,
-    telefono_empleado IN VARCHAR2,
-    fecha_nacimiento_empleado IN VARCHAR2,
-    correo_electronico_empleado IN VARCHAR2,
-    id_departamento_empleado IN NUMBER,
-    id_puesto_empleado IN NUMBER)
-IS
--- declarar variables
-total NUMBER;
-BEGIN
-    -- revisar si ya existe alguien con esa cedula
-    total := 0;
-    SELECT COUNT(*) INTO total FROM empleado WHERE cedula = cedula_empleado;
-    
-    -- si no, agregar al empleado
-    IF total = 0 THEN
-        INSERT INTO empleado(cedula,
-                             nombre,
-                             apellido1,
-                             apellido2,
-                             telefono,
-                             fecha_nacimiento,
-                             correo_electronico,
-                             id_departamento,
-                             id_trabajo)
-        VALUES (cedula_empleado,
-                nombre_empleado,
-                apellido1_empleado,
-                apellido2_empleado,
-                telefono_empleado,
-                TO_DATE(fecha_nacimiento_empleado, 'DD-MM-YYYY'),
-                correo_electronico_empleado,
-                id_departamento_empleado,
-                id_puesto_empleado);
-    END IF;
-END;
-
+-- procedimiento almacenado para agregar una sala
 CREATE OR REPLACE PROCEDURE agregar_sala(
     id_tipo_sala IN NUMBER)
 IS
 BEGIN
     INSERT INTO salas(num_salas, id_tipo) VALUES (num_salas_secuencia.NEXTVAL, id_tipo_sala);
+END;
+
+/* FUNCIONES */
+
+-- buscar las citas por medico
+CREATE OR REPLACE FUNCTION obtener_citas_medico(cedulaMedico IN VARCHAR2)
+RETURN SYS_REFCURSOR
+AS
+    DATOS SYS_REFCURSOR;
+BEGIN
+    OPEN DATOS FOR 
+    SELECT c.id_cita, c.num_sala, c.fecha_hora, c.observaciones, t.tipo_cita, e.ecedula, e.enombre, e.eapellido1, e.eapellido2, p.cedula, p.nombre, p.apellido1, p.apellido2
+    FROM empleado e, paciente p, cita c, tipo_cita t
+    WHERE c.cedula_paciente = p.cedula AND c.cedula_empleado = cedulaMedico
+    AND c.id_tipo_cita = t.id_tipo_cita;
+    RETURN DATOS;
+END;
+
+-- buscar las citas para un medico en una fecha especifica
+CREATE OR REPLACE FUNCTION obtener_citas_medico_x_fecha(cedulaMedico IN VARCHAR2, fecha_revisar IN VARCHAR2)
+RETURN SYS_REFCURSOR
+AS
+    DATOS SYS_REFCURSOR;
+BEGIN
+    OPEN DATOS FOR 
+    SELECT c.id_cita, c.num_sala, c.fecha_hora, c.observaciones, t.tipo_cita, e.ecedula, e.enombre, e.eapellido1, e.eapellido2, p.cedula, p.nombre, p.apellido1, p.apellido2
+    FROM empleado e, paciente p, cita c, tipo_cita t
+    WHERE c.cedula_paciente = p.cedula AND c.cedula_empleado = cedulaMedico
+    AND c.id_tipo_cita = t.id_tipo_cita AND c.fecha_hora = TO_DATE(fecha_revisar,  'DD-MM-YYYY HH24:MI');
+    RETURN DATOS;
+END;
+
+-- buscar todas las citas para una fecha especifica
+CREATE OR REPLACE FUNCTION obtener_citas_en_fecha(fecha_revisar IN VARCHAR2)
+RETURN SYS_REFCURSOR
+AS
+    DATOS SYS_REFCURSOR;
+BEGIN
+    OPEN DATOS FOR 
+    SELECT c.id_cita, c.num_sala, c.fecha_hora, c.observaciones, t.tipo_cita, e.ecedula, e.enombre, e.eapellido1, e.eapellido2, p.cedula, p.nombre, p.apellido1, p.apellido2
+    FROM empleado e, paciente p, cita c, tipo_cita t
+    WHERE c.id_tipo_cita = t.id_tipo_cita AND c.fecha_hora = TO_DATE(fecha_revisar,  'DD-MM-YYYY HH24:MI');
+    RETURN DATOS;
 END;
