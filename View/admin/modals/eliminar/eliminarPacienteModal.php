@@ -11,7 +11,7 @@
       <div class="modal-body">
         <p style="text-align: center;">Esta acción no puede ser deshecha.</p>
         <div class="form-group">
-            <input type="hidden" class="form-control" id="cecula_pacienteEliminar" name="cedula_paciente">
+            <input type="hidden" class="form-control" id="cedula_pacienteEliminar" name="cedula_paciente">
         </div>
       </div>
       <div class="modal-footer">

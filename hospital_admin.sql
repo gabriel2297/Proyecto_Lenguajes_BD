@@ -238,6 +238,7 @@ END;
 
 execute agregar_paciente('11-0723-0822','Pepe','Rodriguez','Centeno','8401-9915','14/10/1998','Juan1958@hotmail.com','2262-7879',1,'M',65,175);
 
+
 --Agregar empleado
 CREATE OR REPLACE PROCEDURE agregar_empleado(
 	cedula in varchar2,
@@ -250,7 +251,6 @@ CREATE OR REPLACE PROCEDURE agregar_empleado(
 	id_departamento in number,
 	id_trabajo in number,
     contrasenha in varchar2)
-	id_trabajo in number)
 as
 	VERROR NUMBER;
 	VMES VARCHAR2(500);
@@ -494,10 +494,57 @@ CREATE OR REPLACE FUNCTION obtener_citas_en_fecha(fecha_revisar IN VARCHAR2)
 RETURN SYS_REFCURSOR
 AS
     DATOS SYS_REFCURSOR;
+    sql_din VARCHAR(100);
 BEGIN
-    OPEN DATOS FOR 
-    SELECT c.id_cita, c.num_sala, c.fecha_hora, c.observaciones, t.tipo_cita, e.ecedula, e.enombre, e.eapellido1, e.eapellido2, p.cedula, p.nombre, p.apellido1, p.apellido2
-    FROM empleado e, paciente p, cita c, tipo_cita t
-    WHERE c.id_tipo_cita = t.id_tipo_cita AND c.fecha_hora = TO_DATE(fecha_revisar,  'DD-MM-YYYY HH24:MI');
+    sql_din := '    SELECT c.id_cita, c.num_sala, c.fecha_hora, c.observaciones, t.tipo_cita, e.ecedula, e.enombre, e.eapellido1, e.eapellido2, p.cedula, p.nombre, p.apellido1, p.apellido2
+                    FROM empleado e, paciente p, cita c, tipo_cita t
+                    WHERE c.id_tipo_cita = t.id_tipo_cita AND c.fecha_hora = TO_DATE(:fecha_revisar,  ''DD-MM-YYYY HH24:MI'')';
+    OPEN DATOS FOR sql_din USING fecha_revisar;
     RETURN DATOS;
 END;
+
+-- funcion para eliminar un
+CREATE OR REPLACE FUNCTION eliminar_paciente(cedula_paciente IN VARCHAR2)
+RETURN VARCHAR2
+AS
+    mensaje_retorno VARCHAR2(50);
+    total NUMBER;
+    sql_din VARCHAR2(100);
+    codigo_error NUMBER;
+    mensaje_error VARCHAR2(32000);
+BEGIN
+    sql_din := 'DELETE FROM paciente WHERE cedula = :cedula_paciente';
+    total := 0;
+    SELECT COUNT(*) INTO total FROM paciente WHERE cedula = cedula_paciente;
+    IF total = 1 THEN
+        EXECUTE IMMEDIATE sql_din USING cedula_paciente;
+        mensaje_retorno := 'Eliminado';
+    ELSE
+        mensaje_retorno := 'Error';
+    END IF;
+    RETURN mensaje_retorno;
+     EXCEPTION
+      WHEN NO_DATA_FOUND THEN
+         codigo_error := SQLCODE;
+         mensaje_error := SQLERRM;
+         DBMS_OUTPUT.PUT_LINE('ERROR NUMERO ' || codigo_error || ' ' || mensaje_error);
+      WHEN TOO_MANY_ROWS THEN
+         codigo_error := SQLCODE;
+         mensaje_error := SQLERRM;
+         DBMS_OUTPUT.PUT_LINE('ERROR NUMERO ' || codigo_error || ' ' || mensaje_error);
+      WHEN OTHERS THEN
+         codigo_error := SQLCODE;
+         mensaje_error := SQLERRM;
+         DBMS_OUTPUT.PUT_LINE('ERROR NUMERO ' || codigo_error || ' ' || mensaje_error);
+END;
+
+/* TRIGGERS */
+
+-- trigger que elimina las llaves foraneas en la tabla de paciente_x_tratamiento antes de borrar el primary key en la tabla paciente
+CREATE OR REPLACE TRIGGER eliminar_paciente
+BEFORE DELETE ON paciente
+FOR EACH ROW
+BEGIN
+    DELETE FROM paciente_x_tratamiento WHERE cedula = :OLD.cedula;
+END;
+

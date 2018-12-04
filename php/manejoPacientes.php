@@ -147,6 +147,34 @@
             }
         }
 
+        // si se quiere eliminar un paciente
+        if($_POST['llave'] == "eliminarPaciente"){
+
+            // obtener la cedula
+            $cedula = $_POST['cedula_paciente'];
+
+            // preparar el query de sql
+            $sql = 'BEGIN 
+                        :resultado := eliminar_paciente(:cedula);
+                    END;';
+
+            // asignar valores
+            $query = oci_parse($conn, $sql);
+
+            // hacer el binding de las variables
+            oci_bind_by_name($query, ":cedula", $cedula);
+            oci_bind_by_name($query, ":resultado", $resultado, 80, SQLT_CHR);
+
+            // ejecutar el procedimiento almacenado
+            oci_execute($query);
+            if($resultado == "Eliminado"){
+                echo "Eliminado";
+            }
+            else{
+                echo "Error";
+            }
+        }
+
         // cerrar conexion
         oci_close($conn);
 

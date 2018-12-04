@@ -82,7 +82,7 @@
                 <div id="resultados"></div>
                 <hr/>
                 <div>
-                <table class="table table-hover dt-responsive nowrap" style="width:100%" id="tabla_pacientes">
+                    <table class="table table-hover dt-responsive nowrap" style="width:100%" id="tabla_pacientes">
                         <thead>
                             <th>Cedula</th>
                             <th>Nombre</th>
@@ -111,6 +111,8 @@
         <?php include("modals/agregar/agregarPacienteModal.php");?>
         <!-- Modal para eliminar pacientes -->
         <?php include("modals/eliminar/eliminarPacienteModal.php");?>
+        <!-- Modal para eliminar pacientes -->
+        <?php include("modals/editar/editarPacienteModal.php");?>
 
         <!-- pie de pagina -->
 		<footer>

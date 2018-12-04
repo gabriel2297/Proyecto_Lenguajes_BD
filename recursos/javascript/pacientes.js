@@ -1,6 +1,7 @@
 $(document).ready( function () {
     cargarTabla();
     modalEliminarPaciente();
+    modalEditarPaciente();
 } );
 
 var cargarTabla = function(){
@@ -111,11 +112,68 @@ function guardarPaciente(llave){
 function modalEliminarPaciente(){
     $(document).on("click", "button[data-role=eliminar]", function(){
         var cedula_paciente = $(this).data('id');
-        $("#cecula_pacienteEliminar").val(cedula_paciente);
+        $("#cedula_pacienteEliminar").val(cedula_paciente);
         $("#eliminarPacienteModal").modal("toggle");
     })
 }
 
 function eliminarPaciente(llave){
-    
+    var cedula_paciente = $("#cecula_pacienteEliminar");
+    $.ajax({
+        url: 'http://localhost/Proyecto_Lenguajes_BD/php/manejoPacientes.php',
+        method: 'POST',
+        dataType: 'text',
+        data: {
+            llave: llave,
+            cedula_paciente: cedula_paciente.val()
+        },success: function(respuesta){
+            if(respuesta == "Eliminado"){
+                cargarTabla();
+                $("#cecula_pacienteEliminar").val("");
+                $("#resultados").addClass("alert alert-success");
+                $("#resultados").html("La información fue eliminada con éxito <i class='fa fa-check-circle'></i>");
+                $("#resultados").delay(5000).fadeOut(function(){
+                    $(this).removeClass("alert alert-success");
+                    $(this).html("");
+                    $(this).css("display", "");
+                });
+            }
+            else{
+                $("#cecula_pacienteEliminar").val("");
+                $("#resultados").addClass("alert alert-danger");
+                $("#resultados").html("Ocurrió un error, por favor intentelo de nuevo. Si vuelve a pasar comuníquese a soporte@sah.com");
+                $("#resultados").delay(5000).fadeOut(function(){
+                    $(this).removeClass("alert alert-danger");
+                    $(this).html("");
+                    $(this).css("display", "");
+                });
+            }
+        }
+    });
+}
+
+function modalEditarPaciente(){
+    $(document).on("click", "button[data-role=editar]", function(){
+        var cedula_paciente = $(this).data('id');
+        var nombre = $("#" + cedula_paciente).children('td[data-target=nombre]').text();
+        var apellido1 = $("#" + cedula_paciente).children('td[data-target=apellido1]').text();
+        var apellido2 = $("#" + cedula_paciente).children('td[data-target=apellido2]').text();
+        var telefono = $("#" + cedula_paciente).children('td[data-target=telefono]').text();
+        var correo = $("#" + cedula_paciente).children('td[data-target=correo]').text();
+        var telefono_sos = $("#" + cedula_paciente).children('td[data-target=telefono_sos]').text();
+        var peso = $("#" + cedula_paciente).children('td[data-target=peso]').text();
+        var altura = $("#" + cedula_paciente).children('td[data-target=altura]').text();
+
+        $("#cedula_editar").val(cedula_paciente);
+        $("#nombre_editar").val(nombre);
+        $("#apellido1_editar").val(apellido1);
+        $("#apellido2_editar").val(apellido2);
+        $("#telefono_editar").val(telefono);
+        $("#correo_editar").val(correo);
+        $("#telefono_sos_editar").val(telefono_sos);
+        $("#peso_editar").val(peso);
+        $("#altura_editar").val(altura);
+
+        $("#editarPacienteModal").modal("toggle");
+    })
 }
