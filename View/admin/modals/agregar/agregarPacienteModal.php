@@ -52,10 +52,10 @@
                         <label for="tipo_sangre">Tipo de sangre</label>
                         <select class="form-control" id="tipo_sangre" name="tipo_sangre">
                             <?php
-                                $datos = oci_parse ($conn, "SELECT tipo FROM hospital_admin.tipo_sangre");
+                                $datos = oci_parse ($conn, "SELECT sang_tipo FROM hospital_admin.tipo_sangre");
                                 oci_execute ($datos);
                                 while($fila = oci_fetch_assoc ($datos)){
-                                    echo "<option>" . $fila['TIPO']. "</option>";
+                                    echo "<option>" . $fila['SANG_TIPO']. "</option>";
                                 }
                             ?>
                         </select>

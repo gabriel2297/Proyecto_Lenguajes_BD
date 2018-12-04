@@ -1,4 +1,4 @@
-<?php include 'php/config_bd.php'; ?>
+<?php include '../../php/config_bd.php'; ?>
 
 <!DOCTYPE html>
 <html>
@@ -31,7 +31,7 @@
         <!-- Navbar de la pagina -->
         <div id="navbar">
             <nav class="navbar navbar-expand-md navbar-light">
-                <a class="navbar-brand" href="index.html">SAH</a>
+                <a class="navbar-brand" href="admin.php">SAH</a>
 
                 <!-- boton para colapsar navbar-->
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#links">
@@ -46,6 +46,10 @@
                         <li><a class="nav-link" href="salas.php">Salas</a></li>
                         <li><a class="nav-link active" href="#">Tratamientos</a></li>
                     </ul>
+                    <ul class="navbar-nav ml-auto">
+						<li><a class="nav-link" href="ajustes.php">Ajustes</a></li>
+						<li><button type="button" class="btn btn-link" onclick="cerrarSesion('cerrarSesion')">Salir</button></li>
+					</ul>
                 </div>
             </nav> 	
         </div>
@@ -92,7 +96,7 @@
         <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/responsive/2.2.3/js/responsive.bootstrap4.min.js"></script>
         <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/rowreorder/1.2.5/js/dataTables.rowReorder.min.js"></script>
 
-        <script type="text/javascript" src="javascript/tratamientos.js"></script>
+        <script type="text/javascript" src="../../recursos/javascript/tratamientos.js"></script>
 
     </body>
 </html>

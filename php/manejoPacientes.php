@@ -45,13 +45,15 @@
                     $datos_genero = oci_parse($conn, "SELECT * FROM tipo_sangre");
                     oci_execute ($datos_genero);
                     while($fila = oci_fetch_assoc ($datos_genero)){
-                        if($data['ID_TIPO_SANGRE'] == $fila["ID_TIPO"]){
-                            $sub_array['tipo_sangre'] = $fila['TIPO'];
+                        if($data['ID_TIPO_SANGRE'] == $fila["SANG_ID_TIPO"]){
+                            $sub_array['tipo_sangre'] = $fila['SANG_TIPO'];
                             break;
                         }
                     }
                     $sub_array['peso'] = $data['PESO'];
                     $sub_array['altura'] = $data['ALTURA'];
+                    $sub_array['editar'] = "<button type='button' class='btn btn-outline-warning' data-role='editar' data-id='$data[CEDULA]'>Editar</button>";
+                    $sub_array['eliminar'] = "<button type='button' class='btn btn-outline-danger' data-role='eliminar' data-id='$data[CEDULA]'>Eliminar</button>";
                     $arreglo['data'][] = $sub_array;
                 }
                 echo json_encode($arreglo);
@@ -94,8 +96,8 @@
             $datos = oci_parse($conn, "SELECT * FROM tipo_sangre");
             oci_execute ($datos);
             while($fila = oci_fetch_assoc ($datos)){
-                if($tipo_sangre == $fila["TIPO"]){
-                    $id_tipo_sangre = $fila["ID_TIPO"];
+                if($tipo_sangre == $fila["SANG_TIPO"]){
+                    $id_tipo_sangre = $fila["SANG_ID_TIPO"];
                     break;
                 }
             }
@@ -138,7 +140,7 @@
 
             // ejecutar el procedimiento almacenado 
             if(oci_execute($query)){
-                echo "La información fue guardada con éxito <i class='far fa-check-circle'></i>";
+                echo "La información fue guardada con éxito <i class='fa fa-check-circle'></i>";
             }
             else{
                 echo "Error";

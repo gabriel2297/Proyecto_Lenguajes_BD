@@ -133,6 +133,21 @@
             }
         }
 
+        // si es cerrar sesion
+        if($_POST['llave'] == "cerrarSesion"){
+             // inicializar la sesion
+             session_start();
+             // eliminar los datos de sesion en servidor
+             $_SESSION = array();
+             // destruir la sesion y revisar por errores
+             if(session_destroy()){
+                echo "Correcto";
+             }
+             else{
+                echo "Error";
+             }
+        }
+
         // cerrar conexion
         oci_close($conn);
 

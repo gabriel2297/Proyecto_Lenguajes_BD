@@ -19,31 +19,21 @@
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     </head>
     <body>
-        <!-- Navbar de la pagina -->
-        <div id="navbar">
-            <nav class="navbar navbar-expand-md navbar-light">
-                <a class="navbar-brand" href="#">SAH</a>
-
-                <!-- boton para colapsar navbar-->
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#links">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <!-- links del navbar -->
-                <div class="collapse navbar-collapse" id="links">
-                    <ul class="navbar-nav">
-                        <li><a class="nav-link" href="pacientes.php">Pacientes</a></li>
-                        <li><a class="nav-link" href="personal.php">Personal</a></li>
-                        <li><a class="nav-link" href="salas.php">Salas</a></li>
-                        <li><a class="nav-link" href="tratamientos.php">Tratamientos</a></li>
-                    </ul>
-                </div>
-            </nav> 	
-        </div>
         <!-- Contenido de la pagina -->
-        <div class="container">
+        <div class="container" style="margin-top: 56px">
             <h1 class="encabezado_h1">S  A  H</h1>
             <h4 class="encabezado_h4">Sistema de Administración Hospitalaria</h4>
+            <form method="post" id="login-form" action="http://localhost/Proyecto_Lenguajes_BD/php/login.php">
+                <div class="form-group">
+                    <label for="correo-login">Su correo:</label>
+                    <input type="text" class="form-control" id="correo-login" name="correo-login" placeholder="Correo" autofocus> 
+                </div>
+                <div class="form-group">
+                    <label for="pwd-login">Su contraseña:</label>
+                    <input type="password" class="form-control" id="pwd-login" name="pwd-login" placeholder="Contraseña">
+                </div>
+                <input type="submit" value="Ingresar" class="btn btn-primary btn-block">
+            </form>
         </div>
 
         <!-- pie de pagina -->

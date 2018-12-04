@@ -1,8 +1,22 @@
-<?php include 'php/config_bd.php'; ?>
+<?php
+	require_once '../../php/config_bd.php';
+    // iniciar la sesion
+    session_start();
+    // Si aun no hay sesion significa que el usuario no ha hecho login, redireccionar a login
+    if(!isset($_SESSION['cedula_empleado']) || empty($_SESSION['cedula_empleado'])){
+      header("location: http://localhost/Proyecto_Lenguajes_BD/");
+      exit;
+    }
+    // el usuario tiene sesion, es admin?
+    if( $_SESSION['id_trabajo'] != 2 ){
+        http_response_code(403);
+        exit;
+    }
+?>
 
 <!DOCTYPE html>
 <html>
-    <head>
+	<head>
 		<title>Lenguajes de bases de datos</title>
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -31,7 +45,7 @@
         <!-- Navbar de la pagina -->
         <div id="navbar">
             <nav class="navbar navbar-expand-md navbar-light">
-                <a class="navbar-brand" href="index.html">SAH</a>
+                <a class="navbar-brand" href="admin.php">SAH</a>
 
                 <!-- boton para colapsar navbar-->
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#links">
@@ -41,11 +55,15 @@
                 <!-- links del navbar -->
                 <div class="collapse navbar-collapse" id="links">
                     <ul class="navbar-nav">
-                        <li><a class="nav-link" href="pacientes.php">Pacientes</a></li>
+                        <li><a class="nav-link active" href="#">Pacientes</a></li>
                         <li><a class="nav-link" href="personal.php">Personal</a></li>
-                        <li><a class="nav-link active" href="#">Salas</a></li>
+                        <li><a class="nav-link" href="salas.php">Salas</a></li>
                         <li><a class="nav-link" href="tratamientos.php">Tratamientos</a></li>
                     </ul>
+                    <ul class="navbar-nav ml-auto">
+						<li><a class="nav-link" href="ajustes.php">Ajustes</a></li>
+						<li><button type="button" class="btn btn-link" onclick="cerrarSesion('cerrarSesion')">Salir</button></li>
+					</ul>
                 </div>
             </nav> 	
         </div>
@@ -57,17 +75,29 @@
                 <hr/>
             </div>
             <div class="introduccion">
-			    <button type="submit" class="btn btn-outline-success pull-right" id="agregarSalaBtn" data-toggle="modal" data-target="#agregarSalaModal">Nueva sala</button>
-                <h5>Manejo de salas</h5>
+			    <button type="submit" class="btn btn-outline-success pull-right" id="agregarPacienteBtn" data-toggle="modal" data-target="#agregarPacienteModal">Nuevo paciente</button>
+                <h5>Manejo de pacientes</h5>
             </div>
             <div class="contenido">
                 <div id="resultados"></div>
                 <hr/>
                 <div>
-                <table class="table table-hover dt-responsive nowrap" style="width:100%" id="tabla_salas">
+                <table class="table table-hover dt-responsive nowrap" style="width:100%" id="tabla_pacientes">
                         <thead>
-                            <th>Numero de sala</th>
-                            <th>Tipo de sala</th>
+                            <th>Cedula</th>
+                            <th>Nombre</th>
+                            <th>Primer apellido</th>
+                            <th>Segundo apellido</th>
+                            <th>Teléfono</th>
+                            <th>Fecha nacimiento</th>
+                            <th>Correo</th>
+                            <th>Telefono SOS</th>
+                            <th>Tipo de sangre</th>
+                            <th>Género</th>
+                            <th>Peso</th>
+                            <th>Altura</th>
+                            <th>Editar</th>
+                            <th>Eliminar</th>
                         </thead>
                         <tbody>
 
@@ -77,8 +107,10 @@
             </div>
         </div>
 
-        <!-- Modal para agregar salas -->
-        <?php include("modals/agregarSalasModal.php");?>
+        <!-- Modal para agregar pacientes -->
+        <?php include("modals/agregar/agregarPacienteModal.php");?>
+        <!-- Modal para eliminar pacientes -->
+        <?php include("modals/eliminar/eliminarPacienteModal.php");?>
 
         <!-- pie de pagina -->
 		<footer>
@@ -92,6 +124,7 @@
         <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/responsive/2.2.3/js/responsive.bootstrap4.min.js"></script>
         <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/rowreorder/1.2.5/js/dataTables.rowReorder.min.js"></script>
 
-        <script type="text/javascript" src="javascript/salas.js"></script>
+        <script type="text/javascript" src="http://localhost/Proyecto_Lenguajes_BD/recursos/javascript/pacientes.js"></script>
+
     </body>
 </html>

@@ -29,3 +29,22 @@
     margin-bottom: 40px;
 }
 
+/* navbar */ 
+#navbar a{
+    color: black;
+}
+
+#navbar a:hover{
+    color: #7f7f7f;
+}
+
+.btn-link {
+    text-decoration: none;
+    color: black;
+}
+
+.btn-link:hover{
+    text-decoration: none;
+    color: #7f7f7f;
+}
+

@@ -1,5 +1,6 @@
 $(document).ready( function () {
     cargarTabla();
+    modalEliminarPaciente();
 } );
 
 var cargarTabla = function(){
@@ -32,7 +33,22 @@ var cargarTabla = function(){
         {"data":"genero"},
         {"data":"peso"},
         {"data":"altura"},
-        ]
+        {"data":"editar"},
+        {"data":"eliminar"},
+        ],
+        createdRow: function (row, data, index) {
+            $(row).find("td:eq(1)").attr('data-target', "nombre");
+            $(row).find("td:eq(2)").attr('data-target', "apellido1");
+            $(row).find("td:eq(3)").attr('data-target', "apellido2");
+            $(row).find("td:eq(4)").attr('data-target', "telefono");
+            $(row).find("td:eq(5)").attr('data-target', "fecha_nacimiento");
+            $(row).find("td:eq(6)").attr('data-target', "correo");
+            $(row).find("td:eq(7)").attr('data-target', "telefono_sos");
+            $(row).find("td:eq(8)").attr('data-target', "tipo_sangre");
+            $(row).find("td:eq(9)").attr('data-target', "genero");
+            $(row).find("td:eq(10)").attr('data-target', "peso");
+            $(row).find("td:eq(11)").attr('data-target', "altura");
+        }
     });
 }
 
@@ -90,4 +106,16 @@ function guardarPaciente(llave){
             }
         }
     });
+}
+
+function modalEliminarPaciente(){
+    $(document).on("click", "button[data-role=eliminar]", function(){
+        var cedula_paciente = $(this).data('id');
+        $("#cecula_pacienteEliminar").val(cedula_paciente);
+        $("#eliminarPacienteModal").modal("toggle");
+    })
+}
+
+function eliminarPaciente(llave){
+    
 }

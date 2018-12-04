@@ -1,4 +1,4 @@
-<?php include 'php/config_bd.php'; ?>
+<?php include '../../php/config_bd.php'; ?>
 
 <!DOCTYPE html>
 <html>
@@ -31,7 +31,7 @@
         <!-- Navbar de la pagina -->
         <div id="navbar">
             <nav class="navbar navbar-expand-md navbar-light">
-                <a class="navbar-brand" href="index.html">SAH</a>
+                <a class="navbar-brand" href="admin.php">SAH</a>
 
                 <!-- boton para colapsar navbar-->
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#links">
@@ -41,11 +41,15 @@
                 <!-- links del navbar -->
                 <div class="collapse navbar-collapse" id="links">
                     <ul class="navbar-nav">
-                        <li><a class="nav-link active" href="#">Pacientes</a></li>
-                        <li><a class="nav-link" href="personal.php">Personal</a></li>
+                        <li><a class="nav-link" href="pacientes.php">Pacientes</a></li>
+                        <li><a class="nav-link active" href="#">Personal</a></li>
                         <li><a class="nav-link" href="salas.php">Salas</a></li>
                         <li><a class="nav-link" href="tratamientos.php">Tratamientos</a></li>
                     </ul>
+                    <ul class="navbar-nav ml-auto">
+						<li><a class="nav-link" href="ajustes.php">Ajustes</a></li>
+						<li><button type="button" class="btn btn-link" onclick="cerrarSesion('cerrarSesion')">Salir</button></li>
+					</ul>
                 </div>
             </nav> 	
         </div>
@@ -57,38 +61,35 @@
                 <hr/>
             </div>
             <div class="introduccion">
-			    <button type="submit" class="btn btn-outline-success pull-right" id="agregarPacienteBtn" data-toggle="modal" data-target="#agregarPacienteModal">Nuevo paciente</button>
-                <h5>Manejo de pacientes</h5>
+			    <button type="submit" class="btn btn-outline-success pull-right" id="agregarEmpleadoBtn" data-toggle="modal" data-target="#agregarEmpleadoModal">Nuevo empleado</button>
+                <h5>Manejo de empleados</h5>
             </div>
             <div class="contenido">
                 <div id="resultados"></div>
                 <hr/>
                 <div>
-                <table class="table table-hover dt-responsive nowrap" style="width:100%" id="tabla_pacientes">
+                <table class="table table-hover dt-responsive nowrap" style="width:100%" id="tabla_empleados">
                         <thead>
                             <th>Cedula</th>
                             <th>Nombre</th>
                             <th>Primer apellido</th>
                             <th>Segundo apellido</th>
                             <th>Teléfono</th>
-                            <th>Fecha nacimiento</th>
+                            <th>Fecha de nacimiento</th>
                             <th>Correo</th>
-                            <th>Telefono SOS</th>
-                            <th>Tipo de sangre</th>
-                            <th>Género</th>
-                            <th>Peso</th>
-                            <th>Altura</th>
+                            <th>Departamento</th>
+                            <th>Puesto</th>
                         </thead>
                         <tbody>
-
+                            
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <!-- Modal para agregar pacientes -->
-        <?php include("modals/agregarPacienteModal.php");?>
+        <!-- Modal para agregar empleados -->
+        <?php include("modals/agregarEmpleadoModal.php");?>
 
         <!-- pie de pagina -->
 		<footer>
@@ -102,7 +103,7 @@
         <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/responsive/2.2.3/js/responsive.bootstrap4.min.js"></script>
         <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/rowreorder/1.2.5/js/dataTables.rowReorder.min.js"></script>
 
-        <script type="text/javascript" src="javascript/pacientes.js"></script>
+        <script type="text/javascript" src="../../recursos/javascript/empleados.js"></script>
 
     </body>
 </html>
