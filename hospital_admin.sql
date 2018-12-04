@@ -142,6 +142,9 @@ INSERT INTO departamento (id_departamento,departamento) VALUES (2, 'Ginecología'
 --trabajo
 INSERT INTO trabajo (id_trabajo,titulo_trabajo) VALUES (num_id_trabajo.NEXTVAL, 'Medico');
 INSERT INTO trabajo (id_trabajo,titulo_trabajo) VALUES (num_id_trabajo.NEXTVAL, 'Admin');
+INSERT INTO trabajo (id_trabajo,titulo_trabajo) VALUES (1, 'Médico');
+INSERT INTO trabajo (id_trabajo,titulo_trabajo) VALUES (2, 'Técnico');
+INSERT INTO trabajo (id_trabajo,titulo_trabajo) VALUES (3, 'Asistente');
 
 --Tipo sala
 INSERT INTO tipo_sala (id_tipo, tipo) VALUES (tipo_sala_secuencia.NEXTVAL, 'Transplantes');
@@ -247,6 +250,7 @@ CREATE OR REPLACE PROCEDURE agregar_empleado(
 	id_departamento in number,
 	id_trabajo in number,
     contrasenha in varchar2)
+	id_trabajo in number)
 as
 	VERROR NUMBER;
 	VMES VARCHAR2(500);
@@ -266,6 +270,7 @@ begin
                              id_departamento,
                              id_trabajo,
                              econtrasenha)
+                             id_trabajo)
         VALUES (cedula,
                 nombre,
                 apellido1,
@@ -299,6 +304,77 @@ execute agregar_empleado('01-1111-2223','admin','admin','admin','7698-0232','adm
 execute agregar_empleado('01-1111-2224','administrador','administrador','administrador','7698-0232','administrador@correo.com','19/07/1980', 1, 2, 'password');
 
 select * from empleado;
+
+/*Agregar cita*/
+create or replace procedure crear_cita( cedulaP in varchar2,
+                                        cedulaE in varchar2,
+                                        numSala in number,
+                                        fechaH in varchar2,
+                                        observ in varchar2,
+                                        idTipoCita in number)
+as
+	VERROR NUMBER;
+	VEXP exception;
+	VMES VARCHAR2(500);
+	total NUMBER;
+	cont number;
+BEGIN
+    -- revisar si ya existe alguna cita en ese consultorio a esa hora
+    total := 0;
+    SELECT COUNT(*) INTO total FROM cita WHERE fecha_hora = TO_DATE(fechaH,  'DD-MM-YYYY HH24:MI') AND num_sala = numSala;
+
+    -- no hay citas a esa hora en ese consultorio, agregar a la persona
+    IF total = 0 THEN
+        INSERT INTO cita(id_cita,
+                             cedula_paciente,
+                             cedula_empleado,
+                             num_sala,
+                             fecha_hora,
+                             observaciones,
+                             id_tipo_cita) 
+        VALUES (num_cita_secuencia.NEXTVAL,
+                cedulaP,
+                cedulaE,
+                numSala,
+                TO_DATE(fechah, 'DD-MM-YYYY HH24:MI'),
+                observ,
+                idTipoCita);
+   ELSE
+    raise  VEXP;
+    END IF;
+    exception
+    WHEN VEXP THEN
+              dbms_output.put_line(VMES);
+       VERROR := SQLCODE;
+       VMES := 'Ya hay una cita programada para esa hora en el consultorio indicado';
+       INSERT INTO AUDITORIA ( NERROR, MENSAJE, FECHA, USUARIO) 
+             VALUES(VERROR,VMES,SYSDATE, USER);
+
+  WHEN  OTHERS  THEN
+       VERROR := SQLCODE;
+       VMES := SQLERRM;
+                     dbms_output.put_line(VMES);
+                id_trabajo);
+   ELSE
+   raise VEXP;
+    END IF;
+    exception
+    when VEXP then
+    VERROR := SQLCODE;
+       VMES := 'El empleado ya esta registrado en la base de datos';
+                     dbms_output.put_line(VMES);
+       INSERT INTO AUDITORIA ( NERROR, MENSAJE, FECHA, USUARIO ) 
+                   VALUES(VERROR,VMES,SYSDATE, USER);   
+  WHEN  OTHERS  THEN
+       VERROR := SQLCODE;
+       VMES := SQLERRM;
+       INSERT INTO AUDITORIA ( NERROR, MENSAJE, FECHA, USUARIO ) 
+                   VALUES(VERROR,VMES,SYSDATE, USER);    
+END;
+
+EXECUTE crear_cita('11-0723-0822', '11-0743-0982', 3, '01-01-2018 15:00', 'Cita', 1);
+
+execute agregar_empleado('11-0743-0982','Andres','Escalante','Armadillo','7698-0232','Escalante.9874@gmail.com','19/07/1980',1,1);
 
 /*Agregar cita*/
 create or replace procedure crear_cita( cedulaP in varchar2,
