@@ -57,7 +57,7 @@
                 <!-- links del navbar -->
                 <div class="collapse navbar-collapse" id="links">
                     <ul class="navbar-nav">
-                        <li><a class="nav-link active" href="#">Pacientes</a></li>
+                        <li><a class="nav-link active" href="pacientes.php">Pacientes</a></li>
                         <li><a class="nav-link" href="personal.php">Personal</a></li>
                         <li><a class="nav-link" href="salas.php">Salas</a></li>
                         <li><a class="nav-link" href="tratamientos.php">Tratamientos</a></li>
@@ -77,37 +77,106 @@
                 <hr/>
             </div>
             <div class="introduccion">
-			    <button type="submit" class="btn btn-outline-success pull-right" id="agregarPacienteBtn" data-toggle="modal" data-target="#agregarPacienteModal">Nuevo paciente</button>
                 <h5>Manejo de pacientes</h5>
             </div>
-            <div class="contenido">
-                <div id="resultados"></div>
-                <hr/>
-                <div>
-                    <table class="table table-striped table-bordered nowrap" style="width:100%" id="tabla_pacientes">
-                        <thead>
-                            <th>Cedula</th>
-                            <th>Nombre</th>
-                            <th>Primer apellido</th>
-                            <th>Segundo apellido</th>
-                            <th>Teléfono</th>
-                            <th>Correo</th>
-                            <th></th>
-                        </thead>
-                        <tbody>
+            <hr/>
 
-                        </tbody>
-                    </table>
+            <?php 
+
+            $cedula = $_GET['cedula_paciente'];
+
+            // obtener datos de ese paciente
+            $query = oci_parse($conn, "SELECT * FROM paciente WHERE cedula = :cedula_paciente");
+
+            // juntar cada dato al query
+            oci_bind_by_name($query, ":cedula_paciente", $cedula);
+            
+            oci_execute ($query);  
+
+            // convertir a arreglo asociativo
+            $paciente = oci_fetch_assoc ($query);
+
+            // buscar el id del genero que fue seleccionado
+            $datos = oci_parse($conn, "SELECT * FROM genero");
+            oci_execute ($datos);
+            while($fila = oci_fetch_assoc ($datos)){
+                if($paciente['ID_GENERO'] == $fila["ID_GENERO"]){
+                    $genero = $fila["GENERO"];
+                    break;
+                }
+            }
+
+            // lo mismo para la sangre
+            $id_tipo_sangre = 0;
+            $datos = oci_parse($conn, "SELECT * FROM tipo_sangre");
+            oci_execute ($datos);
+            while($fila = oci_fetch_assoc ($datos)){
+                if($paciente['ID_TIPO_SANGRE'] == $fila["SANG_ID_TIPO"]){
+                    $tipo_sangre = $fila["SANG_TIPO"];
+                    break;
+                }
+            }
+            
+            echo "
+            <div class='container'>
+                <div class='row'>
+                    <div class='col-sm-6'>
+                        <div class='form-group'>
+                            <label for='cedula'>Número de cédula</label>
+                            <input type='text' class='form-control' id='cedula' readonly value= '" . $paciente['CEDULA'] . "'>
+                        </div>
+                        <div class='form-group'>
+                            <label for='nombre'>Nombre</label>
+                            <input type='text' class='form-control' id='nombre' value='" . $paciente['NOMBRE'] . "'>
+                        </div>
+                        <div class='form-group'>
+                            <label for='apellido1'>Primer apellido</label>
+                            <input type='text' class='form-control' id='apellido1' value='" . $paciente['APELLIDO1'] . "'>
+                        </div>
+                        <div class='form-group'>
+                            <label for='apellido2'>Segundo apellido</label>
+                            <input type='text' class='form-control' id='apellido2' value='" . $paciente['APELLIDO2'] . "'>
+                        </div>
+                        <div class='form-group'>
+                            <label for='telefono'>Telefono</label>
+                            <input type='tel' class='form-control' id='telefono' value='" . $paciente['TELEFONO'] . "'>
+                        </div>
+                        <div class='form-group'>
+                            <label for='fecha_nac'>Fecha de nacimiento</label>
+                            <input type='text' class='form-control' id='fecha_nac' readonly value='" . $paciente['FECHA_NACIMIENTO'] . "'>
+                        </div>
+                    </div>
+                    <div class='col-sm-6'>
+                        <div class='form-group'>
+                            <label for='correo'>Correo electronico</label>
+                            <input type='email' class='form-control' id='correo' value='" . $paciente['CORREO_ELECTRONICO'] . "'>
+                        </div>
+                        <div class='form-group'>
+                            <label for='telefono_sos'>Telefono de emergencia</label>
+                            <input type='tel' class='form-control' id='telefono_sos' value='" . $paciente['TELEFONO_SOS'] . "'>
+                        </div>
+                        <div class='form-group'>
+                            <label for='tipo_sangre'>Tipo de sangre</label>
+                            <input type='text' class='form-control' id='tipo_sangre' readonly value='" . $tipo_sangre . "'>
+                        </div>
+                        <div class='form-group'>
+                            <label for='genero'>Género</label>
+                            <input type='text' class='form-control' id='genero' readonly value='" . $genero . "'>
+                        </div>
+                        <div class='form-group'>
+                            <label for='peso'>Peso</label>
+                            <input type='number' min='0' class='form-control' id='peso' value='" . $paciente['PESO'] . "'>
+                        </div>
+                        <div class='form-group'>
+                            <label for='altura'>Altura</label>
+                            <input type='number' min='0' class='form-control' id='altura' value='" . $paciente['ALTURA'] . "'>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <!-- Modal para agregar pacientes -->
-        <?php include("modals/agregar/agregarPacienteModal.php");?>
-        <!-- Modal para eliminar pacientes -->
-        <?php include("modals/eliminar/eliminarPacienteModal.php");?>
-        <!-- Modal para eliminar pacientes -->
-        <?php include("modals/editar/editarPacienteModal.php");?>
+        ";
+        ?>
 
         <!-- pie de pagina -->
 		<footer>

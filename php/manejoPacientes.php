@@ -29,31 +29,8 @@
                     $sub_array['apellido1'] = $data['APELLIDO1'];
                     $sub_array['apellido2'] = $data['APELLIDO2'];
                     $sub_array['telefono'] = $data['TELEFONO'];
-                    $sub_array['fecha_nacimiento'] = $data['FECHA_NACIMIENTO'];
                     $sub_array['correo'] = $data['CORREO_ELECTRONICO'];
-                    $sub_array['telefono_sos'] = $data['TELEFONO_SOS'];
-                    // buscar el genero en base del id del paciente
-                    $datos_sangre = oci_parse($conn, "SELECT * FROM genero");
-                    oci_execute ($datos_sangre);
-                    while($fila = oci_fetch_assoc ($datos_sangre)){
-                        if($data['ID_GENERO'] == $fila["ID_GENERO"]){
-                            $sub_array['genero'] = $fila['GENERO'];
-                            break;
-                        }
-                    }
-                    // lo mismo para la sangre
-                    $datos_genero = oci_parse($conn, "SELECT * FROM tipo_sangre");
-                    oci_execute ($datos_genero);
-                    while($fila = oci_fetch_assoc ($datos_genero)){
-                        if($data['ID_TIPO_SANGRE'] == $fila["SANG_ID_TIPO"]){
-                            $sub_array['tipo_sangre'] = $fila['SANG_TIPO'];
-                            break;
-                        }
-                    }
-                    $sub_array['peso'] = $data['PESO'];
-                    $sub_array['altura'] = $data['ALTURA'];
-                    $sub_array['editar'] = "<button type='button' class='btn btn-outline-warning' data-role='editar' data-id='$data[CEDULA]'>Editar</button>";
-                    $sub_array['eliminar'] = "<button type='button' class='btn btn-outline-danger' data-role='eliminar' data-id='$data[CEDULA]'>Eliminar</button>";
+                    $sub_array['ver_mas'] = "<form method='GET' action='http://localhost/Proyecto_Lenguajes_BD/View/admin/infopacientes.php'> <input type='hidden' name='cedula_paciente' value='$data[CEDULA]'> <button type='submit' class='btn btn-primary btn-sm'>Ver más</button>  </form>";
                     $arreglo['data'][] = $sub_array;
                 }
                 echo json_encode($arreglo);
@@ -174,10 +151,9 @@
                 echo "Error";
             }
         }
-
-        // cerrar conexion
-        oci_close($conn);
-
     }
+
+    // cerrar conexion
+    oci_close($conn);
 
 ?>

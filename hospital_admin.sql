@@ -237,7 +237,19 @@ BEGIN
 END;
 
 execute agregar_paciente('11-0723-0822','Pepe','Rodriguez','Centeno','8401-9915','14/10/1998','Juan1958@hotmail.com','2262-7879',1,'M',65,175);
-
+execute agregar_paciente('11-0723-0800','Pepe0','Rodriguez','Centeno','8401-9915','14/10/1998','Juan1958@hotmail.com','2262-7879',1,'M',65,175);
+execute agregar_paciente('11-0723-0801','Pepe1','Rodriguez','Centeno','8401-9915','14/10/1998','Juan1958@hotmail.com','2262-7879',1,'M',65,175);
+execute agregar_paciente('11-0723-0802','Pepe2','Rodriguez','Centeno','8401-9915','14/10/1998','Juan1958@hotmail.com','2262-7879',1,'M',65,175);
+execute agregar_paciente('11-0723-0803','Pepe3','Rodriguez','Centeno','8401-9915','14/10/1998','Juan1958@hotmail.com','2262-7879',1,'M',65,175);
+execute agregar_paciente('11-0723-0804','Pepe4','Rodriguez','Centeno','8401-9915','14/10/1998','Juan1958@hotmail.com','2262-7879',1,'M',65,175);
+execute agregar_paciente('11-0723-0805','Pepe5','Rodriguez','Centeno','8401-9915','14/10/1998','Juan1958@hotmail.com','2262-7879',1,'M',65,175);
+execute agregar_paciente('11-0723-0806','Pepe6','Rodriguez','Centeno','8401-9915','14/10/1998','Juan1958@hotmail.com','2262-7879',1,'M',65,175);
+execute agregar_paciente('11-0723-0807','Pepe7','Rodriguez','Centeno','8401-9915','14/10/1998','Juan1958@hotmail.com','2262-7879',1,'M',65,175);
+execute agregar_paciente('11-0723-0808','Pepe8','Rodriguez','Centeno','8401-9915','14/10/1998','Juan1958@hotmail.com','2262-7879',1,'M',65,175);
+execute agregar_paciente('11-0723-0809','Pepe9','Rodriguez','Centeno','8401-9915','14/10/1998','Juan1958@hotmail.com','2262-7879',1,'M',65,175);
+execute agregar_paciente('11-0723-0810','Pepe10','Rodriguez','Centeno','8401-9915','14/10/1998','Juan1958@hotmail.com','2262-7879',1,'M',65,175);
+execute agregar_paciente('11-0723-0811','Pepe11','Rodriguez','Centeno','8401-9915','14/10/1998','Juan1958@hotmail.com','2262-7879',1,'M',65,175);
+execute agregar_paciente('11-0723-0812','Pepe12','Rodriguez','Centeno','8401-9915','14/10/1998','Juan1958@hotmail.com','2262-7879',1,'M',65,175);
 
 --Agregar empleado
 CREATE OR REPLACE PROCEDURE agregar_empleado(
@@ -270,7 +282,6 @@ begin
                              id_departamento,
                              id_trabajo,
                              econtrasenha)
-                             id_trabajo)
         VALUES (cedula,
                 nombre,
                 apellido1,
@@ -303,7 +314,6 @@ execute agregar_empleado('01-1111-2222','medico','medico','medico','7698-0232','
 execute agregar_empleado('01-1111-2223','admin','admin','admin','7698-0232','admin@correo.com','19/07/1980', 1, 2, 'password');
 execute agregar_empleado('01-1111-2224','administrador','administrador','administrador','7698-0232','administrador@correo.com','19/07/1980', 1, 2, 'password');
 
-select * from empleado;
 
 /*Agregar cita*/
 create or replace procedure crear_cita( cedulaP in varchar2,
@@ -339,8 +349,8 @@ BEGIN
                 TO_DATE(fechah, 'DD-MM-YYYY HH24:MI'),
                 observ,
                 idTipoCita);
-   ELSE
-    raise  VEXP;
+    ELSE
+        raise  VEXP;
     END IF;
     exception
     WHEN VEXP THEN
@@ -349,27 +359,10 @@ BEGIN
        VMES := 'Ya hay una cita programada para esa hora en el consultorio indicado';
        INSERT INTO AUDITORIA ( NERROR, MENSAJE, FECHA, USUARIO) 
              VALUES(VERROR,VMES,SYSDATE, USER);
-
-  WHEN  OTHERS  THEN
+    WHEN  OTHERS  THEN
        VERROR := SQLCODE;
        VMES := SQLERRM;
-                     dbms_output.put_line(VMES);
-                id_trabajo);
-   ELSE
-   raise VEXP;
-    END IF;
-    exception
-    when VEXP then
-    VERROR := SQLCODE;
-       VMES := 'El empleado ya esta registrado en la base de datos';
-                     dbms_output.put_line(VMES);
-       INSERT INTO AUDITORIA ( NERROR, MENSAJE, FECHA, USUARIO ) 
-                   VALUES(VERROR,VMES,SYSDATE, USER);   
-  WHEN  OTHERS  THEN
-       VERROR := SQLCODE;
-       VMES := SQLERRM;
-       INSERT INTO AUDITORIA ( NERROR, MENSAJE, FECHA, USUARIO ) 
-                   VALUES(VERROR,VMES,SYSDATE, USER);    
+        dbms_output.put_line(VMES);
 END;
 
 EXECUTE crear_cita('11-0723-0822', '11-0743-0982', 3, '01-01-2018 15:00', 'Cita', 1);
@@ -503,7 +496,7 @@ BEGIN
     RETURN DATOS;
 END;
 
--- funcion para eliminar un
+-- funcion para eliminar un paciente
 CREATE OR REPLACE FUNCTION eliminar_paciente(cedula_paciente IN VARCHAR2)
 RETURN VARCHAR2
 AS
