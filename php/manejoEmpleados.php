@@ -23,14 +23,14 @@
 
             if($num_rows > 0){
                 while($data = oci_fetch_assoc ($datos)){
-                    $sub_array['DT_RowId'] = $data['CEDULA'];
-                    $sub_array["cedula"] = $data['CEDULA'];
-                    $sub_array['nombre'] = $data['NOMBRE'];
-                    $sub_array['apellido1'] = $data['APELLIDO1'];
-                    $sub_array['apellido2'] = $data['APELLIDO2'];
-                    $sub_array['telefono'] = $data['TELEFONO'];
-                    $sub_array['fecha_nacimiento'] = $data['FECHA_NACIMIENTO'];
-                    $sub_array['correo'] = $data['CORREO_ELECTRONICO'];
+                    $sub_array['DT_RowId'] = $data['ECEDULA'];
+                    $sub_array["cedula"] = $data['ECEDULA'];
+                    $sub_array['nombre'] = $data['ENOMBRE'];
+                    $sub_array['apellido1'] = $data['EAPELLIDO1'];
+                    $sub_array['apellido2'] = $data['EAPELLIDO2'];
+                    $sub_array['telefono'] = $data['ETELEFONO'];
+                    $sub_array['fecha_nacimiento'] = $data['EFECHA_NACIMIENTO'];
+                    $sub_array['correo'] = $data['ECORREO_ELECTRONICO'];
                     // buscar el departamento en base del id del departamento
                     $datos_departamento = oci_parse($conn, "SELECT * FROM departamento");
                     oci_execute ($datos_departamento);
@@ -94,6 +94,8 @@
                 }
             }
 
+            $contrasenha = $_POST['contrasenha']; 
+
             // cambiar fecha_nacimiento porque del json viene como yyyy-mm-dd y oracle es dd-mm-yyyy
             $fecha_nacimiento = date('d-m-Y', strtotime($fecha_nacimiento));
 
@@ -106,7 +108,8 @@
                                            :fecha_nacimiento,
                                            :correo,
                                            :id_departamento,
-                                           :id_puesto); 
+                                           :id_puesto,
+                                           :contrasenha); 
                     END;";
             
             // crear un query que junte la conexion a la BD con lo que se va a ejecutar, 
@@ -123,10 +126,11 @@
             oci_bind_by_name($query, ":fecha_nacimiento", $fecha_nacimiento);
             oci_bind_by_name($query, ":id_departamento", $id_departamento);
             oci_bind_by_name($query, ":id_puesto", $id_puesto);
+            oci_bind_by_name($query, ":contrasenha", $contrasenha); 
 
             // ejecutar el procedimiento almacenado 
             if(oci_execute($query)){
-                echo "La información fue guardada con éxito <i class='far fa-check-circle'></i>";
+                echo "La información fue guardada con éxito <i class='fa fa-check-circle'></i>";
             }
             else{
                 echo "Error";

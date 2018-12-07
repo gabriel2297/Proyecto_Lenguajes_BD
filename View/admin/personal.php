@@ -89,7 +89,7 @@
         </div>
 
         <!-- Modal para agregar empleados -->
-        <?php include("modals/agregarEmpleadoModal.php");?>
+        <?php include("modals/agregar/agregarEmpleadoModal.php");?>
 
         <!-- pie de pagina -->
 		<footer>
@@ -103,7 +103,7 @@
         <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/responsive/2.2.3/js/responsive.bootstrap4.min.js"></script>
         <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/rowreorder/1.2.5/js/dataTables.rowReorder.min.js"></script>
 
-        <script type="text/javascript" src="../../recursos/javascript/empleados.js"></script>
+        <script type="text/javascript" src="http://localhost/Proyecto_Lenguajes_BD/recursos/javascript/empleados.js"></script>
 
     </body>
 </html>

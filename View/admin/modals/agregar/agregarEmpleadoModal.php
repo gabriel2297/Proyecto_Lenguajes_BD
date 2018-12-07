@@ -68,6 +68,10 @@
                             ?>
                         </select>
                     </div>
+                    <div class="form-group">
+                        <label for="contrasenha">Contraseña</label>
+                        <input type="password" class="form-control" id="contrasenha" name="contrasenha" placeholder="Contraseña temporal">
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">

@@ -43,6 +43,7 @@ function guardarEmpleado(llave){
     var fecha_nacimiento = $("#fecha_nacimiento");
     var departamento = $("#departamento");
     var puesto = $("#puesto");
+    var contrasenha = $("#contrasenha");
 
     $.ajax({
         url: 'http://localhost/Proyecto_Lenguajes_BD/php/manejoEmpleados.php',
@@ -58,8 +59,8 @@ function guardarEmpleado(llave){
             correo: correo.val(),
             fecha_nacimiento: fecha_nacimiento.val(),
             departamento: departamento.val(),
-            puesto: puesto.val()
-
+            puesto: puesto.val(),
+            contrasenha: contrasenha.val()
         }, success: function(respuesta){
             if(respuesta != "Error"){
                 cargarTabla();

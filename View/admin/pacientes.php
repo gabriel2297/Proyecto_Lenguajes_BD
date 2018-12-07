@@ -104,10 +104,6 @@
 
         <!-- Modal para agregar pacientes -->
         <?php include("modals/agregar/agregarPacienteModal.php");?>
-        <!-- Modal para eliminar pacientes -->
-        <?php include("modals/eliminar/eliminarPacienteModal.php");?>
-        <!-- Modal para eliminar pacientes -->
-        <?php include("modals/editar/editarPacienteModal.php");?>
 
         <!-- pie de pagina -->
 		<footer>

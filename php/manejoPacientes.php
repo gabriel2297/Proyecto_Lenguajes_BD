@@ -151,6 +151,130 @@
                 echo "Error";
             }
         }
+
+
+
+        // si se quiere editar un paciente
+        if($_POST['llave'] == "editarPaciente"){
+
+            // obtener la cedula
+            $cedula = $_POST['cedula'];
+            $nombre = $_POST['nombre'];
+            $apellido1 = $_POST['apellido1'];
+            $apellido2 = $_POST['apellido2'];
+            $telefono = $_POST['telefono'];
+            $correo = $_POST['correo'];
+            $telefono_sos = $_POST['telefono_sos'];
+            $peso = $_POST['peso'];
+            $altura = $_POST['altura'];
+
+            // preparar el query de sql
+            $sql = 'BEGIN 
+                        :resultado := editar_paciente(:cedula, :nombre, :apellido1, :apellido2, :telefono, :correo, :telefono_sos, :peso, :altura);
+                    END;';
+
+            // asignar valores
+            $query = oci_parse($conn, $sql);
+
+            // hacer el binding de las variables
+            oci_bind_by_name($query, ":cedula", $cedula);
+            oci_bind_by_name($query, ":nombre", $nombre);
+            oci_bind_by_name($query, ":apellido1", $apellido1);
+            oci_bind_by_name($query, ":apellido2", $apellido2);
+            oci_bind_by_name($query, ":telefono", $telefono);
+            oci_bind_by_name($query, ":correo", $correo);
+            oci_bind_by_name($query, ":telefono_sos", $telefono_sos);
+            oci_bind_by_name($query, ":peso", $peso);
+            oci_bind_by_name($query, ":altura", $altura);
+            oci_bind_by_name($query, ":resultado", $resultado, 80, SQLT_CHR);
+
+            // ejecutar el procedimiento almacenado
+            oci_execute($query);
+            if($resultado == "Editado"){
+                echo "Editado";
+            }
+            else{
+                echo "Error";
+            }
+        }
+
+        // si se quiere agregar una cita
+        if($_POST['llave'] == "guardarCita"){
+
+            // obtener la cedula
+            $cedula_paciente = $_POST['cedula_paciente'];
+            $cedula_empleado = $_POST['cedula_empleado'];
+            $sala = $_POST['sala'];
+            $observaciones = $_POST['observaciones'];
+            $tipo_cita = $_POST['tipo_cita'];
+            $fecha_hora = $_POST['fecha_hora'];
+
+            // convertir formato de fecha y hora
+            $fecha_hora = date('d-m-Y H:i', strtotime($fecha_hora));
+
+            // obtener el id de sala seleccionado
+            $id_tipo_sala = 0;
+            $datos = oci_parse($conn, "SELECT * FROM tipo_sala");
+            oci_execute ($datos);
+            while($fila = oci_fetch_assoc ($datos)){
+                if($sala == $fila["TIPO"]){
+                    $id_tipo_sala = $fila["ID_TIPO"];
+                    break;
+                }
+            }
+
+            // obtener el numero de sala disponible
+            $num_sala = 0;
+            $datos = oci_parse($conn, "SELECT * FROM salas");
+            oci_execute($datos);
+            while($fila = oci_fetch_assoc($datos)){
+                if($fila['ID_TIPO'] == $id_tipo_sala){
+                    $num_sala = $fila['NUM_SALAS'];
+                }
+            }
+
+            // obtener el id de tipo de cita
+            $id_tipo_cita = 0;
+            $datos = oci_parse($conn, "SELECT * FROM tipo_cita");
+            oci_execute($datos);
+            while($fila = oci_fetch_assoc($datos)){
+                if($fila['TIPO_CITA'] == $tipo_cita){
+                    $id_tipo_cita = $fila['ID_TIPO_CITA'];
+                }
+            }
+
+            // crear llamada al procedimiento almacenado 
+            $sql = "BEGIN crear_cita(:cedula_paciente,
+                                    :cedula_empleado,
+                                    :num_sala,
+                                    :fecha_hora,
+                                    :observaciones,
+                                    :id_tipo_cita); 
+                    END;";
+            
+            // crear un query que junte la conexion a la BD con lo que se va a ejecutar, 
+            //$conn viene de config_bd.php
+            $query = oci_parse($conn, $sql);
+
+            // juntar cada dato al query
+            oci_bind_by_name($query, ":cedula_paciente", $cedula_paciente);
+            oci_bind_by_name($query, ":cedula_empleado", $cedula_empleado);
+            oci_bind_by_name($query, ":num_sala", $num_sala);
+            oci_bind_by_name($query, ":fecha_hora", $fecha_hora);
+            oci_bind_by_name($query, ":observaciones", $observaciones);
+            oci_bind_by_name($query, ":id_tipo_cita", $id_tipo_cita);
+
+            // ejecutar el procedimiento almacenado 
+            if(oci_execute($query)){
+                echo "Agregado";
+            }
+            else{
+                echo "Error";
+            }
+
+        }
+
+
     }
 
     // cerrar conexion

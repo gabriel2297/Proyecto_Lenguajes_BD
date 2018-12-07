@@ -82,7 +82,7 @@
         </div>
 
         <!-- Modal para agregar tratamientos -->
-        <?php include("modals/agregarTratamientoModal.php");?>
+        <?php include("modals/agregar/agregarTratamientoModal.php");?>
 
         <!-- pie de pagina -->
 		<footer>

@@ -1,7 +1,6 @@
 $(document).ready( function () {
     cargarTabla();
-    modalEliminarPaciente();
-    modalEditarPaciente();
+    $('#datetimepicker1').datetimepicker();
 } );
 
 var cargarTabla = function(){
@@ -97,16 +96,8 @@ function guardarPaciente(llave){
     });
 }
 
-function modalEliminarPaciente(){
-    $(document).on("click", "button[data-role=eliminar]", function(){
-        var cedula_paciente = $(this).data('id');
-        $("#cedula_pacienteEliminar").val(cedula_paciente);
-        $("#eliminarPacienteModal").modal("toggle");
-    })
-}
-
 function eliminarPaciente(llave){
-    var cedula_paciente = $("#cecula_pacienteEliminar");
+    var cedula_paciente = $("#cedula");
     $.ajax({
         url: 'http://localhost/Proyecto_Lenguajes_BD/php/manejoPacientes.php',
         method: 'POST',
@@ -116,18 +107,17 @@ function eliminarPaciente(llave){
             cedula_paciente: cedula_paciente.val()
         },success: function(respuesta){
             if(respuesta == "Eliminado"){
-                cargarTabla();
-                $("#cecula_pacienteEliminar").val("");
                 $("#resultados").addClass("alert alert-success");
-                $("#resultados").html("La información fue eliminada con éxito <i class='fa fa-check-circle'></i>");
-                $("#resultados").delay(5000).fadeOut(function(){
+                $("#resultados").html("Paciente eliminado satisfactoriamente <i class='fa fa-check-circle'></i>");
+                $("#resultados").delay(3000).fadeOut(function(){
                     $(this).removeClass("alert alert-success");
                     $(this).html("");
                     $(this).css("display", "");
-                });
+                    window.location.replace("http://localhost/Proyecto_Lenguajes_BD/View/admin/pacientes.php");
+                }); 
+                
             }
             else{
-                $("#cecula_pacienteEliminar").val("");
                 $("#resultados").addClass("alert alert-danger");
                 $("#resultados").html("Ocurrió un error, por favor intentelo de nuevo. Si vuelve a pasar comuníquese a soporte@sah.com");
                 $("#resultados").delay(5000).fadeOut(function(){
@@ -140,42 +130,16 @@ function eliminarPaciente(llave){
     });
 }
 
-function modalEditarPaciente(){
-    $(document).on("click", "button[data-role=editar]", function(){
-        var cedula_paciente = $(this).data('id');
-        var nombre = $("#" + cedula_paciente).children('td[data-target=nombre]').text();
-        var apellido1 = $("#" + cedula_paciente).children('td[data-target=apellido1]').text();
-        var apellido2 = $("#" + cedula_paciente).children('td[data-target=apellido2]').text();
-        var telefono = $("#" + cedula_paciente).children('td[data-target=telefono]').text();
-        var correo = $("#" + cedula_paciente).children('td[data-target=correo]').text();
-        var telefono_sos = $("#" + cedula_paciente).children('td[data-target=telefono_sos]').text();
-        var peso = $("#" + cedula_paciente).children('td[data-target=peso]').text();
-        var altura = $("#" + cedula_paciente).children('td[data-target=altura]').text();
-
-        $("#cedula_editar").val(cedula_paciente);
-        $("#nombre_editar").val(nombre);
-        $("#apellido1_editar").val(apellido1);
-        $("#apellido2_editar").val(apellido2);
-        $("#telefono_editar").val(telefono);
-        $("#correo_editar").val(correo);
-        $("#telefono_sos_editar").val(telefono_sos);
-        $("#peso_editar").val(peso);
-        $("#altura_editar").val(altura);
-
-        $("#editarPacienteModal").modal("toggle");
-    })
-}
-
 function editarPaciente(llave){
-    var cedula =$("#cedula_editar");
-    var nombre = $("#nombre_editar");
-    var apellido1 = $("#apellido1_editar");
-    var apellido2 = $("#apellido2_editar");
-    var telefono = $("#telefono_editar");
-    var correo = $("#correo_editar");
-    var telefono_sos = $("#telefono_sos_editar");
-    var peso = $("#peso_editar");
-    var altura = $("#altura_editar");
+    var cedula =$("#cedula");
+    var nombre = $("#nombre");
+    var apellido1 = $("#apellido1");
+    var apellido2 = $("#apellido2");
+    var telefono = $("#telefono");
+    var correo = $("#correo");
+    var telefono_sos = $("#telefono_sos");
+    var peso = $("#peso");
+    var altura = $("#altura");
 
     $.ajax({
         url: 'http://localhost/Proyecto_Lenguajes_BD/php/manejoPacientes.php',
@@ -193,15 +157,59 @@ function editarPaciente(llave){
             peso: peso.val(),
             altura: altura.val()
         }, success: function(respuesta){
-            if(respuesta != "Error"){
-                cargarTabla();
+            if(respuesta == "Editado"){
                 $("#resultados").addClass("alert alert-success");
-                $("#resultados").html(respuesta);
-                $("#resultados").delay(5000).fadeOut(function(){
+                $("#resultados").html("Paciente editado satisfactoriamente <i class='fa fa-check-circle'></i>");
+                $("#resultados").delay(3000).fadeOut(function(){
                     $(this).removeClass("alert alert-success");
                     $(this).html("");
                     $(this).css("display", "");
+                    location.reload(true);
+                }); 
+            }
+            else{
+                $("#resultados").addClass("alert alert-danger");
+                $("#resultados").html("Ocurrió un error, por favor intentelo de nuevo. Si vuelve a pasar comuníquese a soporte@adminSAH.com");
+                $("#resultados").delay(5000).fadeOut(function(){
+                    $(this).removeClass("alert alert-danger");
+                    $(this).html("");
+                    $(this).css("display", "");
                 });
+            }
+        }
+    });
+}
+
+function guardarCita(llave){
+    var cedula_paciente = $("#cedula");
+    var cedula_empleado = $("#cedula_empleado");
+    var sala = $("#sala");
+    var observaciones = $("#observaciones");
+    var tipo_cita = $("#tipo_cita");
+    var fecha_hora = $("#fecha_hora");
+
+    $.ajax({
+        url: 'http://localhost/Proyecto_Lenguajes_BD/php/manejoPacientes.php',
+        method: 'POST',
+        dataType: 'text', 
+        data: {
+            llave: llave,
+            cedula_paciente: cedula_paciente.val(),
+            cedula_empleado: cedula_empleado.val(),
+            sala: sala.val(),
+            observaciones: observaciones.val(),
+            tipo_cita: tipo_cita.val(),
+            fecha_hora: fecha_hora.val()
+        }, success: function(respuesta){
+            if(respuesta == "Agregado"){
+                $("#resultados").addClass("alert alert-success");
+                $("#resultados").html("Cita agregada satisfactoriamente <i class='fa fa-check-circle'></i>");
+                $("#resultados").delay(3000).fadeOut(function(){
+                    $(this).removeClass("alert alert-success");
+                    $(this).html("");
+                    $(this).css("display", "");
+                    location.reload(true);
+                }); 
             }
             else{
                 $("#resultados").addClass("alert alert-danger");

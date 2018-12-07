@@ -8,6 +8,7 @@
 
 .pie_pagina{
     text-align: center;
+    margin-top: 100px;
 }
 
 .container{
@@ -50,5 +51,10 @@
 
 tr, td{
     text-align: center;
+}
+
+.btn{
+    margin-left: 4px;
+    margin-right: 4px;
 }
 

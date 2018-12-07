@@ -56,7 +56,7 @@
 
             // ejecutar el procedimiento almacenado 
             if(oci_execute($query)){
-                echo "La información fue guardada con éxito <i class='far fa-check-circle'></i>";
+                echo "La información fue guardada con éxito <i class='fa fa-check-circle'></i>";
             }
             else{
                 echo "Error";
