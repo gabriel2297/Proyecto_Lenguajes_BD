@@ -25,11 +25,17 @@ var cargarTabla = function(){
         {"data":"apellido1"},
         {"data":"apellido2"},
         {"data":"telefono"},
-        {"data":"fecha_nacimiento"},
         {"data":"correo"},
-        {"data":"departamento"},
-        {"data":"puesto"},
-        ]
+        {"data":"ver_mas"},
+        ],
+        createdRow: function (row, data, index) {
+            $(row).find("td:eq(1)").attr('data-target', "nombre");
+            $(row).find("td:eq(2)").attr('data-target', "apellido1");
+            $(row).find("td:eq(3)").attr('data-target', "apellido2");
+            $(row).find("td:eq(4)").attr('data-target', "telefono");            
+            $(row).find("td:eq(5)").attr('data-target', "correo");
+            $(row).find("td:eq(6)").attr('data-target', "ver_mas");
+        }
     });
 }
 

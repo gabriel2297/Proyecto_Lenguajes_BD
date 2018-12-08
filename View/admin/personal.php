@@ -68,17 +68,15 @@
                 <div id="resultados"></div>
                 <hr/>
                 <div>
-                <table class="table table-hover dt-responsive nowrap" style="width:100%" id="tabla_empleados">
+                <table class="table table-striped table-hover table-bordered nowrap" style="width:100%" id="tabla_empleados">
                         <thead>
                             <th>Cedula</th>
                             <th>Nombre</th>
                             <th>Primer apellido</th>
                             <th>Segundo apellido</th>
                             <th>Teléfono</th>
-                            <th>Fecha de nacimiento</th>
                             <th>Correo</th>
-                            <th>Departamento</th>
-                            <th>Puesto</th>
+                            <th></th>
                         </thead>
                         <tbody>
                             
@@ -104,6 +102,6 @@
         <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/rowreorder/1.2.5/js/dataTables.rowReorder.min.js"></script>
 
         <script type="text/javascript" src="http://localhost/Proyecto_Lenguajes_BD/recursos/javascript/empleados.js"></script>
-
+        <script src="../../recursos/javascript/js.js"></script>
     </body>
 </html>

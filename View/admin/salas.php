@@ -68,10 +68,11 @@
                 <div id="resultados"></div>
                 <hr/>
                 <div>
-                <table class="table table-hover dt-responsive nowrap" style="width:100%" id="tabla_salas">
+                <table class="table table-striped table-hover table-bordered nowrap" style="width:100%" id="tabla_salas">
                         <thead>
                             <th>Numero de sala</th>
                             <th>Tipo de sala</th>
+                            <th>Acciones</th>
                         </thead>
                         <tbody>
 
@@ -97,5 +98,6 @@
         <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/rowreorder/1.2.5/js/dataTables.rowReorder.min.js"></script>
 
         <script type="text/javascript" src="../../recursos/javascript/salas.js"></script>
+        <script src="../../recursos/javascript/js.js"></script>
     </body>
 </html>

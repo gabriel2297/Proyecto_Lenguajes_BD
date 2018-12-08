@@ -68,10 +68,11 @@
                 <div id="resultados"></div>
                 <hr/>
                 <div>
-                <table class="table table-hover dt-responsive nowrap" style="width:100%" id="tabla_tratamientos">
+                <table class="table table-striped table-hover table-bordered nowrap" style="width:100%" id="tabla_tratamientos">
                         <thead>
                             <th>Codigo</th>
                             <th>Tratamiento</th>
+                            <th>Acciones</th>
                         </thead>
                         <tbody>
 
@@ -97,6 +98,6 @@
         <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/rowreorder/1.2.5/js/dataTables.rowReorder.min.js"></script>
 
         <script type="text/javascript" src="../../recursos/javascript/tratamientos.js"></script>
-
+        <script src="../../recursos/javascript/js.js"></script>
     </body>
 </html>

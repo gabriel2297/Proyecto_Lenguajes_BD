@@ -81,9 +81,7 @@
                 <hr/>
             </div>
             <div class="introduccion">
-                <button type="submit" class="btn btn-primary pull-right" id="agendarCitaBtn" data-toggle="modal" data-target="#agendarCitaModal">Agendar cita</button>
-                <button type="submit" class="btn btn-primary pull-right" id="verTratamientosBtn" data-toggle="modal" data-target="#verTratamientosModal">Ver tratamientos</button>
-                <h5>Manejo de pacientes</h5>
+                <h5>Manejo de empleados</h5>
             </div>
             <hr/>
         </div>
@@ -92,36 +90,35 @@
             <div class="row">
                 <?php 
 
-                    $cedula = $_GET['cedula_paciente'];
+                    $cedula = $_GET['cedula_empleado'];
 
-                    // obtener datos de ese paciente
-                    $query = oci_parse($conn, "SELECT * FROM paciente WHERE cedula = :cedula_paciente");
+                    // obtener datos de ese empleado
+                    $query = oci_parse($conn, "SELECT * FROM empleado WHERE ecedula = :cedula_empleado");
 
                     // juntar cada dato al query
-                    oci_bind_by_name($query, ":cedula_paciente", $cedula);
+                    oci_bind_by_name($query, ":cedula_empleado", $cedula);
                     
                     oci_execute ($query);  
 
                     // convertir a arreglo asociativo
-                    $paciente = oci_fetch_assoc ($query);
+                    $empleado = oci_fetch_assoc ($query);
 
                     // buscar el id del genero que fue seleccionado
-                    $datos = oci_parse($conn, "SELECT * FROM genero");
+                    $datos = oci_parse($conn, "SELECT * FROM departamento");
                     oci_execute ($datos);
                     while($fila = oci_fetch_assoc ($datos)){
-                        if($paciente['ID_GENERO'] == $fila["ID_GENERO"]){
-                            $genero = $fila["GENERO"];
+                        if($empleado['ID_DEPARTAMENTO'] == $fila["ID_DEPARTAMENTO"]){
+                            $departamento = $fila["DEPARTAMENTO"];
                             break;
                         }
                     }
 
-                    // lo mismo para la sangre
-                    $id_tipo_sangre = 0;
-                    $datos = oci_parse($conn, "SELECT * FROM tipo_sangre");
+                    // lo mismo para el trabajo
+                    $datos = oci_parse($conn, "SELECT * FROM trabajo");
                     oci_execute ($datos);
                     while($fila = oci_fetch_assoc ($datos)){
-                        if($paciente['ID_TIPO_SANGRE'] == $fila["SANG_ID_TIPO"]){
-                            $tipo_sangre = $fila["SANG_TIPO"];
+                        if($empleado['ID_TRABAJO'] == $fila["ID_TRABAJO"]){
+                            $trabajo = $fila["TITULO_TRABAJO"];
                             break;
                         }
                     }
@@ -130,136 +127,140 @@
                         <div class='col-sm-6'>
                             <div class='form-group'>
                                 <label for='cedula'>Número de cédula</label>
-                                <input type='text' class='form-control' id='cedula' readonly value= '" . $paciente['CEDULA'] . "'>
+                                <input type='text' class='form-control' id='cedula' readonly value= '" . $empleado['ECEDULA'] . "'>
                             </div>
                             <div class='form-group'>
                                 <label for='nombre'>Nombre</label>
-                                <input type='text' class='form-control' id='nombre' value='" . $paciente['NOMBRE'] . "'>
+                                <input type='text' class='form-control' id='nombre' value='" . $empleado['ENOMBRE'] . "'>
                             </div>
                             <div class='form-group'>
                                 <label for='apellido1'>Primer apellido</label>
-                                <input type='text' class='form-control' id='apellido1' value='" . $paciente['APELLIDO1'] . "'>
+                                <input type='text' class='form-control' id='apellido1' value='" . $empleado['EAPELLIDO1'] . "'>
                             </div>
                             <div class='form-group'>
                                 <label for='apellido2'>Segundo apellido</label>
-                                <input type='text' class='form-control' id='apellido2' value='" . $paciente['APELLIDO2'] . "'>
+                                <input type='text' class='form-control' id='apellido2' value='" . $empleado['EAPELLIDO2'] . "'>
                             </div>
                             <div class='form-group'>
                                 <label for='telefono'>Telefono</label>
-                                <input type='tel' class='form-control' id='telefono' value='" . $paciente['TELEFONO'] . "'>
-                            </div>
-                            <div class='form-group'>
-                                <label for='fecha_nac'>Fecha de nacimiento</label>
-                                <input type='text' class='form-control' id='fecha_nac' readonly value='" . $paciente['FECHA_NACIMIENTO'] . "'>
+                                <input type='tel' class='form-control' id='telefono' value='" . $empleado['ETELEFONO'] . "'>
                             </div>
                         </div>
                         <div class='col-sm-6'>
                             <div class='form-group'>
+                                <label for='fecha_nac'>Fecha de nacimiento</label>
+                                <input type='text' class='form-control' id='fecha_nac' readonly value='" . $empleado['EFECHA_NACIMIENTO'] . "'>
+                            </div>
+                            <div class='form-group'>
                                 <label for='correo'>Correo electronico</label>
-                                <input type='email' class='form-control' id='correo' value='" . $paciente['CORREO_ELECTRONICO'] . "'>
+                                <input type='email' class='form-control' id='correo' value='" . $empleado['ECORREO_ELECTRONICO'] . "'>
                             </div>
                             <div class='form-group'>
-                                <label for='telefono_sos'>Telefono de emergencia</label>
-                                <input type='tel' class='form-control' id='telefono_sos' value='" . $paciente['TELEFONO_SOS'] . "'>
+                                <label for='departamento'>Departamento</label>
+                                <input type='text' class='form-control' id='departamento' readonly value='" . $departamento . "'>
                             </div>
                             <div class='form-group'>
-                                <label for='tipo_sangre'>Tipo de sangre</label>
-                                <input type='text' class='form-control' id='tipo_sangre' readonly value='" . $tipo_sangre . "'>
-                            </div>
-                            <div class='form-group'>
-                                <label for='genero'>Género</label>
-                                <input type='text' class='form-control' id='genero' readonly value='" . $genero . "'>
-                            </div>
-                            <div class='form-group'>
-                                <label for='peso'>Peso</label>
-                                <input type='number' min='0' class='form-control' id='peso' value='" . $paciente['PESO'] . "'>
-                            </div>
-                            <div class='form-group'>
-                                <label for='altura'>Altura</label>
-                                <input type='number' min='0' class='form-control' id='altura' value='" . $paciente['ALTURA'] . "'>
+                                <label for='trabajo'>Trabajo</label>
+                                <input type='text' class='form-control' id='trabajo' readonly value='" . $trabajo . "'>
                             </div>
                         </div>
                     ";
                 ?>
-            </div> <!-- Fin div row de datos paciente-->
+            </div> <!-- Fin div row de datos empleado-->
             
-            <button type="submit" class="btn btn-primary pull-right" id="editarPacienteBtn" onclick="editarPaciente('editarPaciente')">Terminar de editar</button>
-            <button type="submit" class="btn btn-primary pull-right" id="eliminarPacienteBtn" data-toggle="modal" data-target="#eliminarPacienteModal">Eliminar paciente</button>
-            <a class="btn btn-primary pull-right" href="http://localhost/Proyecto_Lenguajes_BD/View/admin/pacientes.php" role="button">Volver</a>  
+            <button type="submit" class="btn btn-primary pull-right" id="editarEmpleadoBtn" onclick="editarEmpleado('editarEmpleado')">Terminar de editar</button>
+            <button type="submit" class="btn btn-primary pull-right" id="eliminarEmpleadoBtn" data-toggle="modal" data-target="#eliminarEmpleadoModal">Eliminar empleado</button>
+            <a class="btn btn-primary pull-right" href="http://localhost/Proyecto_Lenguajes_BD/View/admin/personal.php" role="button">Volver</a>  
 
         </div>  <!-- FIN DIV CONTAINER -->
 
-        <div class="container-fluid">
-            <hr/>
-            <div class="introduccion">
-                 <h5>Citas asignadas:</h5>
-            </div>
-            <hr/>
-            <table class="table table-striped table-bordered nowrap" style="width:100%" id="tabla_pacientes">
-                <thead>
-                    <th>Cita #</th>
-                    <th>Sala #</th>
-                    <th>Fecha y hora</th>
-                    <th>Observaciones</th>
-                    <th>Tipo de cita</th>
-                    <th>Cedula medico</th>
-                    <th>Nombre medico</th>
-                    <th>Primer apellido medico</th>
-                    <th>Segundo apellido medico</th>
-                </thead>
-                <tbody>
-                    <?php
-                        $cedula = $_GET['cedula_paciente'];
-                        $p_cursor = oci_new_cursor($conn);
-                        $stid = oci_parse($conn, "begin :cursor := obtener_citas_paciente(:cedula); end;");
+        <?php 
+            $cedula = $_GET['cedula_empleado'];
 
-                        oci_bind_by_name($stid, ":cedula", $cedula, 20);
-                        oci_bind_by_name($stid, ':cursor', $p_cursor, -1, OCI_B_CURSOR);
-                        oci_execute($stid);
+            // obtener datos de ese empleado
+            $query = oci_parse($conn, "SELECT id_trabajo FROM empleado WHERE ecedula = :cedula_empleado");
 
-                        oci_execute($p_cursor, OCI_DEFAULT);
-                        
-                        $contador = 0;
+            // juntar cada dato al query
+            oci_bind_by_name($query, ":cedula_empleado", $cedula);
+            
+            oci_execute ($query);  
 
-                        while (($row = oci_fetch_array($p_cursor, OCI_ASSOC+OCI_RETURN_NULLS)) != false) {
-                            echo "<tr>";
-                            echo "<td>". $row['ID_CITA'] . "</td>";
-                            echo "<td>". $row['NUM_SALA'] . "</td>";
-                            echo "<td>". $row['FECHA_HORA'] . "</td>";
-                            echo "<td>". $row['OBSERVACIONES'] . "</td>";
-                            echo "<td>". $row['TIPO_CITA'] . "</td>";
-                            echo "<td>". $row['ECEDULA'] . "</td>";
-                            echo "<td>". $row['ENOMBRE'] . "</td>";
-                            echo "<td>". $row['EAPELLIDO1'] . "</td>";
-                            echo "<td>". $row['EAPELLIDO2'] . "</td>";
-                            echo "</tr>";
+            // convertir a arreglo asociativo
+            $empleado = oci_fetch_assoc ($query);
 
-                            $contador++;
-                        }
+            if($empleado['ID_TRABAJO'] == 1){
+                echo "
+                    <div class='container-fluid'>
+                        <hr/>
+                        <div class='introduccion'>
+                            <h5>Citas asignadas:</h5>
+                        </div>
+                        <hr/>
+                        <table class='table table-striped table-bordered nowrap' style='width:100%' id='tabla_citas'>
+                        <thead>
+                            <th>Cita #</th>
+                            <th>Sala #</th>
+                            <th>Fecha y hora</th>
+                            <th>Observaciones</th>
+                            <th>Tipo de cita</th>
+                            <th>Cedula paciente</th>
+                            <th>Nombre</th>
+                            <th>Primer apellido</th>
+                            <th>Segundo apellido</th>
+                        </thead>
+                ";
 
-                        oci_free_statement($stid);
-                        oci_free_statement($p_cursor);
+                echo "<tbody>";
 
-                        if($contador == 0){
-                            echo "<td colspan='9'>Ninguna cita encontrada</td>";
-                        }
-                    ?>
-                </tbody>
-            </table>
-        </div>
+                /* Traer la informacion de empleados */
+                $cedula = $_GET['cedula_empleado'];
+                $p_cursor = oci_new_cursor($conn);
+                $stid = oci_parse($conn, "begin :cursor := obtener_citas_medico(:cedula); end;");
+
+                oci_bind_by_name($stid, ":cedula", $cedula, 20);
+                oci_bind_by_name($stid, ':cursor', $p_cursor, -1, OCI_B_CURSOR);
+                oci_execute($stid);
+
+                oci_execute($p_cursor, OCI_DEFAULT);
+                
+                $contador = 0;
+                while (($row = oci_fetch_array($p_cursor, OCI_ASSOC+OCI_RETURN_NULLS)) != false) {
+                    echo "<tr>";
+                    echo "<td>". $row['ID_CITA'] . "</td>";
+                    echo "<td>". $row['NUM_SALA'] . "</td>";
+                    echo "<td>". $row['FECHA_HORA'] . "</td>";
+                    echo "<td>". $row['OBSERVACIONES'] . "</td>";
+                    echo "<td>". $row['TIPO_CITA'] . "</td>";
+                    echo "<td>". $row['CEDULA'] . "</td>";
+                    echo "<td>". $row['NOMBRE'] . "</td>";
+                    echo "<td>". $row['APELLIDO1'] . "</td>";
+                    echo "<td>". $row['APELLIDO2'] . "</td>";
+                    echo "</tr>";
+                    $contador++;
+                }
+
+                if($contador == 0){
+                    echo "<td colspan='9'>Ninguna cita encontrada</td>";
+                }
+
+                oci_free_statement($stid);
+                oci_free_statement($p_cursor);
+
+
+                echo "
+                        </tbody>
+                    </table>
+                </div>";
+            }
+        ?>
+
         <!-- pie de pagina -->
 		<footer>
             <p style="text-align: center; margin-top: 100px;">Diseño y desarrollo por LenguajesBD Proyecto &copy; 2018</p>
         </footer>
 
-        <!-- Modal para eliminar pacientes -->
-        <?php include("modals/eliminar/eliminarPacienteModal.php");?>
-
-        <!-- Modal para agendar citas -->
-        <?php include("modals/agregar/agendarCitaModal.php");?>
-
-        <!-- Modal para ver tratamientos -->
-        <?php include("modals/ver/verTratamientosModal.php");?>
+        <!-- Modal para eliminar empleados -->
+        <?php include("modals/eliminar/eliminarEmpleadoModal.php");?>
 
         <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
         <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
@@ -268,8 +269,7 @@
         <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/responsive/2.2.3/js/responsive.bootstrap4.min.js"></script>
         <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/rowreorder/1.2.5/js/dataTables.rowReorder.min.js"></script>
 
-        <script type="text/javascript" src="http://localhost/Proyecto_Lenguajes_BD/recursos/javascript/masinfo.js"></script>
+        <script type="text/javascript" src="http://localhost/Proyecto_Lenguajes_BD/recursos/javascript/infoempleados.js"></script>
         <script src="../../recursos/javascript/js.js"></script>
-        
     </body>
 </html>

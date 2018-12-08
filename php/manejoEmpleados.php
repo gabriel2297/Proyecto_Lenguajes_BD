@@ -29,26 +29,8 @@
                     $sub_array['apellido1'] = $data['EAPELLIDO1'];
                     $sub_array['apellido2'] = $data['EAPELLIDO2'];
                     $sub_array['telefono'] = $data['ETELEFONO'];
-                    $sub_array['fecha_nacimiento'] = $data['EFECHA_NACIMIENTO'];
                     $sub_array['correo'] = $data['ECORREO_ELECTRONICO'];
-                    // buscar el departamento en base del id del departamento
-                    $datos_departamento = oci_parse($conn, "SELECT * FROM departamento");
-                    oci_execute ($datos_departamento);
-                    while($fila = oci_fetch_assoc ($datos_departamento)){
-                        if($data['ID_DEPARTAMENTO'] == $fila["ID_DEPARTAMENTO"]){
-                            $sub_array['departamento'] = $fila['DEPARTAMENTO'];
-                            break;
-                        }
-                    }
-                    // lo mismo para puesto
-                    $datos_trabajo = oci_parse($conn, "SELECT * FROM trabajo");
-                    oci_execute ($datos_trabajo);
-                    while($fila = oci_fetch_assoc ($datos_trabajo)){
-                        if($data['ID_TRABAJO'] == $fila["ID_TRABAJO"]){
-                            $sub_array['puesto'] = $fila['TITULO_TRABAJO'];
-                            break;
-                        }
-                    }
+                    $sub_array['ver_mas'] = "<form method='GET' action='http://localhost/Proyecto_Lenguajes_BD/View/admin/infoempleados.php'> <input type='hidden' name='cedula_empleado' value='$data[ECEDULA]'> <button type='submit' class='btn btn-primary btn-sm'>Ver más</button>  </form>";
                     $arreglo['data'][] = $sub_array;
                 }
                 echo json_encode($arreglo);
@@ -71,6 +53,7 @@
             $fecha_nacimiento = $_POST['fecha_nacimiento'];
             $departamento = $_POST['departamento'];
             $puesto = $_POST['puesto'];
+            $contrasenha = $_POST['contrasenha']; 
 
             // buscar el id del departamento que fue seleccionado
             $id_departamento = "";
@@ -94,7 +77,6 @@
                 }
             }
 
-            $contrasenha = $_POST['contrasenha']; 
 
             // cambiar fecha_nacimiento porque del json viene como yyyy-mm-dd y oracle es dd-mm-yyyy
             $fecha_nacimiento = date('d-m-Y', strtotime($fecha_nacimiento));
@@ -105,8 +87,8 @@
                                            :apellido1,
                                            :apellido2,
                                            :telefono,
-                                           :fecha_nacimiento,
                                            :correo,
+                                           :fecha_nacimiento,
                                            :id_departamento,
                                            :id_puesto,
                                            :contrasenha); 
@@ -131,6 +113,73 @@
             // ejecutar el procedimiento almacenado 
             if(oci_execute($query)){
                 echo "La información fue guardada con éxito <i class='fa fa-check-circle'></i>";
+            }
+            else{
+                echo "Error";
+            }
+        }
+
+        // si se quiere editar un empleado
+        if($_POST['llave'] == "editarEmpleado"){
+
+            // obtener la cedula
+            $cedula = $_POST['cedula'];
+            $nombre = $_POST['nombre'];
+            $apellido1 = $_POST['apellido1'];
+            $apellido2 = $_POST['apellido2'];
+            $telefono = $_POST['telefono'];
+            $correo = $_POST['correo'];
+
+            // preparar el query de sql
+            $sql = 'BEGIN 
+                        :resultado := editar_empleado(:cedula, :nombre, :apellido1, :apellido2, :telefono, :correo);
+                    END;';
+
+            // asignar valores
+            $query = oci_parse($conn, $sql);
+
+            // hacer el binding de las variables
+            oci_bind_by_name($query, ":cedula", $cedula);
+            oci_bind_by_name($query, ":nombre", $nombre);
+            oci_bind_by_name($query, ":apellido1", $apellido1);
+            oci_bind_by_name($query, ":apellido2", $apellido2);
+            oci_bind_by_name($query, ":telefono", $telefono);
+            oci_bind_by_name($query, ":correo", $correo);
+            oci_bind_by_name($query, ":resultado", $resultado, 80, SQLT_CHR);
+
+            // ejecutar el procedimiento almacenado
+            oci_execute($query);
+            if($resultado == "Editado"){
+                echo "Editado";
+            }
+            else{
+                echo "Error";
+            }
+        }
+
+        
+        // si se quiere eliminar un empleado
+        if($_POST['llave'] == "eliminarEmpleado"){
+
+            // obtener la cedula
+            $cedula = $_POST['cedula_empleado'];
+
+            // preparar el query de sql
+            $sql = 'BEGIN 
+                        :resultado := eliminar_empleado(:cedula);
+                    END;';
+
+            // asignar valores
+            $query = oci_parse($conn, $sql);
+
+            // hacer el binding de las variables
+            oci_bind_by_name($query, ":cedula", $cedula);
+            oci_bind_by_name($query, ":resultado", $resultado, 80, SQLT_CHR);
+
+            // ejecutar el procedimiento almacenado
+            oci_execute($query);
+            if($resultado == "Eliminado"){
+                echo "Eliminado";
             }
             else{
                 echo "Error";

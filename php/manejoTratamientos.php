@@ -27,6 +27,7 @@
                     $sub_array['DT_RowId'] = $data['ID_TRATAMIENTO'];
                     $sub_array["codigo"] = $data['ID_TRATAMIENTO'];
                     $sub_array['descripcion'] = $data['TRATAMIENTO'];
+                    $sub_array['acciones'] = "<button class='btn btn-primary btn-sm' data-role='editar' data-id='$data[ID_TRATAMIENTO]'>Editar</button><button class='btn btn-primary btn-sm' data-role='eliminar' data-id='$data[ID_TRATAMIENTO]'>Eliminar</button>";
                     $arreglo['data'][] = $sub_array;
                 }
                 echo json_encode($arreglo);

@@ -34,6 +34,7 @@
                             break;
                         }
                     }
+                    $sub_array['acciones'] = "<button class='btn btn-primary btn-sm' data-role='editar' data-id='$data[NUM_SALAS]'>Editar</button><button class='btn btn-primary btn-sm' data-role='eliminar' data-id='$data[NUM_SALAS]'>Eliminar</button>";
                     $arreglo['data'][] = $sub_array;
                 }
                 echo json_encode($arreglo);

@@ -22,6 +22,7 @@ var cargarTabla = function(){
         "columns": [
         {"data":"numero_sala", "data-order":"numero_sala"},
         {"data":"tipo_sala"},
+        {"data": "acciones"},
         ]
     });
 }

@@ -84,7 +84,7 @@
                 <div id="resultados"></div>
                 <hr/>
                 <div>
-                    <table class="table table-striped table-bordered nowrap" style="width:100%" id="tabla_pacientes">
+                    <table class="table table-striped table-hover table-bordered nowrap" style="width:100%" id="tabla_pacientes">
                         <thead>
                             <th>Cedula</th>
                             <th>Nombre</th>
@@ -119,6 +119,7 @@
 
 
         <script type="text/javascript" src="http://localhost/Proyecto_Lenguajes_BD/recursos/javascript/pacientes.js"></script>
-
+        <script src="../../recursos/javascript/js.js"></script>
+        
     </body>
 </html>

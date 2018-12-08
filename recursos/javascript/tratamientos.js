@@ -22,6 +22,7 @@ var cargarTabla = function(){
         "columns": [
         {"data":"codigo", "data-order":"codigo"},
         {"data":"descripcion"},
+        {"data":"acciones"},
         ]
     });
 }

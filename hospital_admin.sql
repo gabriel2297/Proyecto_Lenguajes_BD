@@ -316,10 +316,6 @@ execute agregar_empleado('01-1111-2222','medico','medico','medico','7698-0232','
 execute agregar_empleado('01-1111-2223','admin','admin','admin','7698-0232','admin@correo.com','19/07/1980', 1, 2, 'password');
 execute agregar_empleado('01-1111-2224','administrador','administrador','administrador','7698-0232','administrador@correo.com','19/07/1980', 1, 2, 'password');
 
-select * from salas;
-select * from tipo_sala;
-select * from tipo_cita;
-
 /*Agregar cita*/
 create or replace procedure crear_cita( cedulaP in varchar2,
                                         cedulaE in varchar2,
@@ -512,8 +508,6 @@ BEGIN
          DBMS_OUTPUT.PUT_LINE('ERROR NUMERO ' || codigo_error || ' ' || mensaje_error);
 END;
 
-
-desc paciente;
 -- funcion para editar un paciente
 CREATE OR REPLACE FUNCTION editar_paciente(
     cedula_paciente IN VARCHAR2,
@@ -568,6 +562,87 @@ BEGIN
          DBMS_OUTPUT.PUT_LINE('ERROR NUMERO ' || codigo_error || ' ' || mensaje_error);
 END;
 
+CREATE OR REPLACE FUNCTION editar_empleado(
+    cedula_empleado IN VARCHAR2,
+    nombre_empleado IN VARCHAR2,
+    apellido1_empleado IN VARCHAR2,
+    apellido2_empleado IN VARCHAR2,
+    telefono_empleado IN VARCHAR2,
+    correo_empleado IN VARCHAR2
+)
+RETURN VARCHAR2
+AS
+    mensaje_retorno VARCHAR2(100);
+    total NUMBER;
+    sql_din VARCHAR2(2000);
+    codigo_error NUMBER;
+    mensaje_error VARCHAR2(32000);
+BEGIN
+    sql_din := 'UPDATE empleado SET enombre = :nombre_empleado,
+                                    eapellido1 = :apellido1_empleado,
+                                    eapellido2 = :apellido2_empleado,
+                                    etelefono = :telefono_empleado,
+                                    ecorreo_electronico = :correo_empleado
+                                    WHERE ecedula = :cedula_empleado';
+    total := 0;
+    SELECT COUNT(*) INTO total FROM empleado WHERE ecedula = cedula_empleado;
+    IF total = 1 THEN
+        EXECUTE IMMEDIATE sql_din USING nombre_empleado, apellido1_empleado, apellido2_empleado, telefono_empleado, correo_empleado, cedula_empleado;
+        mensaje_retorno := 'Editado';
+        RETURN mensaje_retorno;
+    ELSE
+        mensaje_retorno := 'Error';
+        RETURN mensaje_retorno;
+    END IF;
+     EXCEPTION
+      WHEN NO_DATA_FOUND THEN
+         codigo_error := SQLCODE;
+         mensaje_error := SQLERRM;
+         DBMS_OUTPUT.PUT_LINE('ERROR NUMERO ' || codigo_error || ' ' || mensaje_error);
+      WHEN TOO_MANY_ROWS THEN
+         codigo_error := SQLCODE;
+         mensaje_error := SQLERRM;
+         DBMS_OUTPUT.PUT_LINE('ERROR NUMERO ' || codigo_error || ' ' || mensaje_error);
+      WHEN OTHERS THEN
+         codigo_error := SQLCODE;
+         mensaje_error := SQLERRM;
+         DBMS_OUTPUT.PUT_LINE('ERROR NUMERO ' || codigo_error || ' ' || mensaje_error);
+END;
+
+-- funcion para eliminar un empleado
+CREATE OR REPLACE FUNCTION eliminar_empleado(cedula_empleado IN VARCHAR2)
+RETURN VARCHAR2
+AS
+    mensaje_retorno VARCHAR2(50);
+    total NUMBER;
+    sql_din VARCHAR2(100);
+    codigo_error NUMBER;
+    mensaje_error VARCHAR2(32000);
+BEGIN
+    sql_din := 'DELETE FROM empleado WHERE ecedula = :cedula_empleado';
+    total := 0;
+    SELECT COUNT(*) INTO total FROM empleado WHERE ecedula = cedula_empleado;
+    IF total = 1 THEN
+        EXECUTE IMMEDIATE sql_din USING cedula_empleado;
+        mensaje_retorno := 'Eliminado';
+    ELSE
+        mensaje_retorno := 'Error';
+    END IF;
+    RETURN mensaje_retorno;
+     EXCEPTION
+      WHEN NO_DATA_FOUND THEN
+         codigo_error := SQLCODE;
+         mensaje_error := SQLERRM;
+         DBMS_OUTPUT.PUT_LINE('ERROR NUMERO ' || codigo_error || ' ' || mensaje_error);
+      WHEN TOO_MANY_ROWS THEN
+         codigo_error := SQLCODE;
+         mensaje_error := SQLERRM;
+         DBMS_OUTPUT.PUT_LINE('ERROR NUMERO ' || codigo_error || ' ' || mensaje_error);
+      WHEN OTHERS THEN
+         codigo_error := SQLCODE;
+         mensaje_error := SQLERRM;
+         DBMS_OUTPUT.PUT_LINE('ERROR NUMERO ' || codigo_error || ' ' || mensaje_error);
+END;
 
 /* TRIGGERS */
 
@@ -578,3 +653,13 @@ FOR EACH ROW
 BEGIN
     DELETE FROM paciente_x_tratamiento WHERE cedula = :OLD.cedula;
 END;
+
+-- trigger que elimina las llaves foraneas en la tabla de citas antes de borrar el primary key en la tabla empleado
+CREATE OR REPLACE TRIGGER eliminar_empleado
+BEFORE DELETE ON empleado
+FOR EACH ROW
+BEGIN
+    DELETE FROM cita WHERE cedula_empleado = :OLD.ecedula;
+END;
+
+
