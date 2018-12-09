@@ -73,7 +73,66 @@
 
             // ejecutar el procedimiento almacenado 
             if(oci_execute($query)){
-                echo "La información fue guardada con éxito <i class='far fa-check-circle'></i>";
+                echo "La información fue guardada con éxito <i class='fa fa-check-circle'></i>";
+            }
+            else{
+                echo "Error";
+            }
+        }
+
+        // si es editar una sala
+        if($_POST['llave'] == "editarSala"){
+            $tipo_sala = $_POST['tipo_sala'];
+            $num_sala = $_POST['num_sala'];
+
+            // buscar el tipo de sala que fue seleccionado
+            $id_tipo_sala = "";
+            $datos = oci_parse($conn, "SELECT * FROM tipo_sala");
+            oci_execute ($datos);
+            while($fila = oci_fetch_assoc ($datos)){
+                if($tipo_sala == $fila["TIPO"]){
+                    $id_tipo_sala = $fila["ID_TIPO"];
+                    break;
+                }
+            }
+
+            // crear llamada al procedimiento almacenado 
+            $sql = "BEGIN editar_sala(:id_tipo_sala, :num_sala); END;";
+            
+            // crear un query que junte la conexion a la BD con lo que se va a ejecutar, 
+            //$conn viene de config_bd.php
+            $query = oci_parse($conn, $sql);
+
+            // juntar cada dato al query
+            oci_bind_by_name($query, ":id_tipo_sala", $id_tipo_sala);
+            oci_bind_by_name($query, ":num_sala", $num_sala);
+
+            // ejecutar el procedimiento almacenado 
+            if(oci_execute($query)){
+                echo "Sala editada con éxito <i class='fa fa-check-circle'></i>";
+            }
+            else{
+                echo "Error";
+            }
+        }
+
+        // si es eliminar una sala
+        if($_POST['llave'] == "eliminarSala"){
+            $num_sala = $_POST['num_sala'];
+
+            // crear llamada al procedimiento almacenado 
+            $sql = "BEGIN eliminar_sala(:num_sala); END;";
+            
+            // crear un query que junte la conexion a la BD con lo que se va a ejecutar, 
+            //$conn viene de config_bd.php
+            $query = oci_parse($conn, $sql);
+
+            // juntar cada dato al query
+            oci_bind_by_name($query, ":num_sala", $num_sala);
+
+            // ejecutar el procedimiento almacenado 
+            if(oci_execute($query)){
+                echo "Sala eliminada con éxito <i class='fa fa-check-circle'></i>";
             }
             else{
                 echo "Error";

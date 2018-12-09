@@ -7,8 +7,8 @@
       header("location: http://localhost/Proyecto_Lenguajes_BD/");
       exit;
     }
-    // el usuario tiene sesion, es admin?
-    if( $_SESSION['id_trabajo'] != 2 ){
+    // el usuario tiene sesion, es medico?
+    if( $_SESSION['id_trabajo'] != 1 ){
         http_response_code(403);
         exit;
     }
@@ -61,9 +61,7 @@
                 <!-- links del navbar -->
                 <div class="collapse navbar-collapse" id="links">
                     <ul class="navbar-nav">
-                        <li><a class="nav-link active" href="pacientes.php">Pacientes</a></li>
-                        <li><a class="nav-link" href="personal.php">Personal</a></li>
-                        <li><a class="nav-link" href="salas.php">Salas</a></li>
+                    <li><a class="nav-link active" href="pacientes.php">Mis pacientes</a></li>
                         <li><a class="nav-link" href="tratamientos.php">Tratamientos</a></li>
                     </ul>
                     <ul class="navbar-nav ml-auto">
@@ -80,9 +78,8 @@
                 <hr/>
             </div>
             <div class="introduccion">
-                <button type="submit" class="btn btn-primary pull-right" id="agendarCitaBtn" data-toggle="modal" data-target="#agendarCitaModal">Agendar cita</button>
                 <button type="submit" class="btn btn-primary pull-right" id="verTratamientosBtn" data-toggle="modal" data-target="#verTratamientosModal">Ver tratamientos</button>
-                <h5>Manejo de pacientes</h5>
+                <h5>Información de pacientes</h5>
             </div>
             <hr/>
         </div>
@@ -133,19 +130,19 @@
                             </div>
                             <div class='form-group'>
                                 <label for='nombre'>Nombre</label>
-                                <input type='text' class='form-control' id='nombre' value='" . $paciente['NOMBRE'] . "'>
+                                <input type='text' class='form-control' id='nombre' readonly value='" . $paciente['NOMBRE'] . "'>
                             </div>
                             <div class='form-group'>
                                 <label for='apellido1'>Primer apellido</label>
-                                <input type='text' class='form-control' id='apellido1' value='" . $paciente['APELLIDO1'] . "'>
+                                <input type='text' class='form-control' id='apellido1' readonly value='" . $paciente['APELLIDO1'] . "'>
                             </div>
                             <div class='form-group'>
                                 <label for='apellido2'>Segundo apellido</label>
-                                <input type='text' class='form-control' id='apellido2' value='" . $paciente['APELLIDO2'] . "'>
+                                <input type='text' class='form-control' id='apellido2' readonly value='" . $paciente['APELLIDO2'] . "'>
                             </div>
                             <div class='form-group'>
                                 <label for='telefono'>Telefono</label>
-                                <input type='tel' class='form-control' id='telefono' value='" . $paciente['TELEFONO'] . "'>
+                                <input type='tel' class='form-control' id='telefono' readonly value='" . $paciente['TELEFONO'] . "'>
                             </div>
                             <div class='form-group'>
                                 <label for='fecha_nac'>Fecha de nacimiento</label>
@@ -155,11 +152,11 @@
                         <div class='col-sm-6'>
                             <div class='form-group'>
                                 <label for='correo'>Correo electronico</label>
-                                <input type='email' class='form-control' id='correo' value='" . $paciente['CORREO_ELECTRONICO'] . "'>
+                                <input type='email' class='form-control' id='correo' readonly value='" . $paciente['CORREO_ELECTRONICO'] . "'>
                             </div>
                             <div class='form-group'>
                                 <label for='telefono_sos'>Telefono de emergencia</label>
-                                <input type='tel' class='form-control' id='telefono_sos' value='" . $paciente['TELEFONO_SOS'] . "'>
+                                <input type='tel' class='form-control' id='telefono_sos' readonly value='" . $paciente['TELEFONO_SOS'] . "'>
                             </div>
                             <div class='form-group'>
                                 <label for='tipo_sangre'>Tipo de sangre</label>
@@ -171,46 +168,38 @@
                             </div>
                             <div class='form-group'>
                                 <label for='peso'>Peso</label>
-                                <input type='number' min='0' class='form-control' id='peso' value='" . $paciente['PESO'] . "'>
+                                <input type='number' min='0' class='form-control' id='peso' readonly value='" . $paciente['PESO'] . "'>
                             </div>
                             <div class='form-group'>
                                 <label for='altura'>Altura</label>
-                                <input type='number' min='0' class='form-control' id='altura' value='" . $paciente['ALTURA'] . "'>
+                                <input type='number' min='0' class='form-control' id='altura' readonly value='" . $paciente['ALTURA'] . "'>
                             </div>
                         </div>
                     ";
                 ?>
             </div> <!-- Fin div row de datos paciente-->
             
-            <button type="submit" class="btn btn-primary pull-right" id="editarPacienteBtn" onclick="editarPaciente('editarPaciente')">Terminar de editar</button>
-            <button type="submit" class="btn btn-primary pull-right" id="eliminarPacienteBtn" data-toggle="modal" data-target="#eliminarPacienteModal">Eliminar paciente</button>
-            <a class="btn btn-primary pull-right" href="http://localhost/Proyecto_Lenguajes_BD/View/admin/pacientes.php" role="button">Volver</a>  
+            <button type="submit" class="btn btn-primary pull-right" id="terminarCitaBtn" data-toggle="modal" data-target="#terminarCitaModal">Terminar cita</button>
+            <a class="btn btn-primary pull-right" href="http://localhost/Proyecto_Lenguajes_BD/View/medico/pacientes.php" role="button">Volver</a>            
 
         </div>  <!-- FIN DIV CONTAINER -->
 
         <div class="container-fluid">
             <hr/>
             <div class="introduccion">
-                 <h5>Citas pendientes:</h5>
+                 <h5>Historial del paciente</h5>
             </div>
             <hr/>
-            <table class="table table-striped table-bordered nowrap" style="width:100%" id="tabla_pacientes">
+            <table class="table table-striped table-bordered nowrap" style="width:100%" id="tabla_historial">
                 <thead>
-                    <th>Cita #</th>
-                    <th>Estado cita</th>
-                    <th>Sala #</th>
-                    <th>Fecha y hora</th>
-                    <th>Tipo de cita</th>
-                    <th>Cedula medico</th>
-                    <th>Nombre medico</th>
-                    <th>Primer apellido medico</th>
-                    <th>Segundo apellido medico</th>
+                    <th>Tratamiento</th>
+                    <th>Fecha asignado</th>
                 </thead>
                 <tbody>
                     <?php
                         $cedula = $_GET['cedula_paciente'];
                         $p_cursor = oci_new_cursor($conn);
-                        $stid = oci_parse($conn, "begin :cursor := obtener_citas_paciente(:cedula); end;");
+                        $stid = oci_parse($conn, "begin :cursor := buscar_tratamientos_paciente(:cedula); end;");
 
                         oci_bind_by_name($stid, ":cedula", $cedula, 20);
                         oci_bind_by_name($stid, ':cursor', $p_cursor, -1, OCI_B_CURSOR);
@@ -218,47 +207,35 @@
 
                         oci_execute($p_cursor, OCI_DEFAULT);
                         
-                        $contador = 0;
-
+                        $counter = 0;
                         while (($row = oci_fetch_array($p_cursor, OCI_ASSOC+OCI_RETURN_NULLS)) != false) {
                             echo "<tr>";
-                            echo "<td>". $row['ID_CITA'] . "</td>";
-                            echo "<td>". $row['ESTADO_CITA'] . "</td>";
-                            echo "<td>". $row['NUM_SALA'] . "</td>";
-                            echo "<td>". $row['FECHA_HORA'] . "</td>";
-                            echo "<td>". $row['TIPO_CITA'] . "</td>";
-                            echo "<td>". $row['ECEDULA'] . "</td>";
-                            echo "<td>". $row['ENOMBRE'] . "</td>";
-                            echo "<td>". $row['EAPELLIDO1'] . "</td>";
-                            echo "<td>". $row['EAPELLIDO2'] . "</td>";
+                            echo "<td>" . $row['TRATAMIENTO'] . "</td>";
+                            echo "<td>" . $row['FECHA_RECETA'] . "</td>";
                             echo "</tr>";
+                            $counter++;
+                        }
 
-                            $contador++;
+                        if($counter == 0){
+                            echo "<td colspan='6'>Ninguna cita encontrada</td>";
                         }
 
                         oci_free_statement($stid);
                         oci_free_statement($p_cursor);
-
-                        if($contador == 0){
-                            echo "<td colspan='9'>Ninguna cita encontrada</td>";
-                        }
                     ?>
                 </tbody>
             </table>
         </div>
+
+        <!-- Modal para ver tratamientos -->
+        <?php include("modals/verTratamientosModal.php");?>
+        <!-- Modal para terminar cita -->
+        <?php include("modals/terminarCitaModal.php");?>
+        
         <!-- pie de pagina -->
 		<footer>
             <p style="text-align: center; margin-top: 100px;">Diseño y desarrollo por LenguajesBD Proyecto &copy; 2018</p>
         </footer>
-
-        <!-- Modal para eliminar pacientes -->
-        <?php include("modals/eliminar/eliminarPacienteModal.php");?>
-
-        <!-- Modal para agendar citas -->
-        <?php include("modals/agregar/agendarCitaModal.php");?>
-
-        <!-- Modal para ver tratamientos -->
-        <?php include("modals/ver/verTratamientosModal.php");?>
 
         <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
         <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
@@ -267,7 +244,7 @@
         <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/responsive/2.2.3/js/responsive.bootstrap4.min.js"></script>
         <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/rowreorder/1.2.5/js/dataTables.rowReorder.min.js"></script>
 
-        <script type="text/javascript" src="http://localhost/Proyecto_Lenguajes_BD/recursos/javascript/masinfo.js"></script>
+        <script type="text/javascript" src="http://localhost/Proyecto_Lenguajes_BD/recursos/javascript/pacientesMedico.js"></script>
         <script src="../../recursos/javascript/js.js"></script>
         
     </body>

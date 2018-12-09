@@ -1,3 +1,22 @@
+$(document).ready( function () {
+    $("#sala").on('change',function(){
+        var sala = $("#sala");
+        var llave = "obtenerNumSalas";
+        $.ajax({
+            url: 'http://localhost/Proyecto_Lenguajes_BD/php/manejoPacientes.php',
+            method: 'POST',
+            dataType: 'text',
+            data:{
+                llave: llave,
+                sala: sala.val()
+            }, success: function(respuesta){
+                $("#id_sala").empty();
+                $("#id_sala").append(respuesta);
+            }
+        });
+    });
+} );
+
 function eliminarPaciente(llave){
     var cedula_paciente = $("#cedula");
     $.ajax({
@@ -85,8 +104,7 @@ function editarPaciente(llave){
 function guardarCita(llave){
     var cedula_paciente = $("#cedula");
     var cedula_empleado = $("#cedula_empleado");
-    var sala = $("#sala");
-    var observaciones = $("#observaciones");
+    var num_sala = $("#id_sala");
     var tipo_cita = $("#tipo_cita");
     var fecha_hora = $("#fecha_hora");
 
@@ -98,8 +116,7 @@ function guardarCita(llave){
             llave: llave,
             cedula_paciente: cedula_paciente.val(),
             cedula_empleado: cedula_empleado.val(),
-            sala: sala.val(),
-            observaciones: observaciones.val(),
+            num_sala: num_sala.val(),
             tipo_cita: tipo_cita.val(),
             fecha_hora: fecha_hora.val()
         }, success: function(respuesta){
@@ -125,3 +142,4 @@ function guardarCita(llave){
         }
     });
 }
+

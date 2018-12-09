@@ -1,5 +1,5 @@
 <?php
-	require_once '../php/config_bd.php';
+	require_once '../../php/config_bd.php';
     // iniciar la sesion
     session_start();
     // Si aun no hay sesion significa que el usuario no ha hecho login, redireccionar a login
@@ -7,8 +7,8 @@
       header("location: http://localhost/Proyecto_Lenguajes_BD/");
       exit;
     }
-    // el usuario tiene sesion, es admin?
-    if( $_SESSION['id_trabajo'] != 2 ){
+    // el usuario tiene sesion, es medico?
+    if( $_SESSION['id_trabajo'] != 1 ){
         http_response_code(403);
         exit;
     }
@@ -23,12 +23,10 @@
             <meta name="keywords" content="HTML, CSS, JavaScript">
             <!-- Latest compiled and minified CSS -->
             <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
-            
             <!-- bootstrap scripts -->
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
             <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
-
             <!-- Google fonts -->
             <link href="https://fonts.googleapis.com/css?family=Abel" rel="stylesheet"> 
 
@@ -47,7 +45,7 @@
         <!-- Navbar de la pagina -->
         <div id="navbar">
             <nav class="navbar navbar-expand-md navbar-light">
-                <a class="navbar-brand" href="admin.php">SAH</a>
+                <a class="navbar-brand" href="#">SAH</a>
 
                 <!-- boton para colapsar navbar-->
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#links">
@@ -57,57 +55,55 @@
                 <!-- links del navbar -->
                 <div class="collapse navbar-collapse" id="links">
                     <ul class="navbar-nav">
-                        <li><a class="nav-link active" href="pacientes.php">Pacientes</a></li>
-                        <li><a class="nav-link" href="personal.php">Personal</a></li>
-                        <li><a class="nav-link" href="salas.php">Salas</a></li>
-                        <li><a class="nav-link" href="tratamientos.php">Tratamientos</a></li>
+                        <li><a class="nav-link" href="pacientes.php">Mis pacientes</a></li>
+                        <li><a class="nav-link" href="#">Tratamientos</a></li>
                     </ul>
                     <ul class="navbar-nav ml-auto">
-						<li><a class="nav-link" href="ajustes.php">Ajustes</a></li>
 						<li><button type="button" class="btn btn-link" onclick="cerrarSesion('cerrarSesion')">Salir</button></li>
 					</ul>
                 </div>
             </nav> 	
         </div>
         <!-- Contenido de la pagina -->
-        <div>
+        <div class="container-fluid">
+            <div class="titulos">
+                <h1 class="encabezado_h1">S  A  H</h1>
+                <h4 class="encabezado_h4">Sistema de Administración Hospitalaria</h4>				
+                <hr/>
+            </div>
+            <div class="introduccion">
+                <h5>Tratamientos disponibles</h5>
+            </div>
+            <div class="contenido">
+                <div id="resultados"></div>
+                <hr/>
+                <div>
+                    <table class="table table-striped table-hover table-bordered nowrap" style="width:100%" id="tabla_tratamientos">
+                        <thead>
+                            <th>Codigo</th>
+                            <th>Tratamiento</th>
+                        </thead>
+                        <tbody>
 
-            <?php
-
-                $cedula = '01-1674-0099';
-                $p_cursor = oci_new_cursor($conn);
-                $stid = oci_parse($conn, "begin :cursor := obtener_citas_paciente(:cedula); end;");
-
-                oci_bind_by_name($stid, ":cedula", $cedula, 20);
-                oci_bind_by_name($stid, ':cursor', $p_cursor, -1, OCI_B_CURSOR);
-                oci_execute($stid);
-
-                oci_execute($p_cursor, OCI_DEFAULT);
-                
-                /* while (($row = oci_fetch_array($p_cursor, OCI_ASSOC+OCI_RETURN_NULLS)) != false) {
-                    echo $row['ID_CITA'] . "<br />\n";
-                } */
-
-                oci_fetch_all($p_cursor, $cursor, null, null, OCI_FETCHSTATEMENT_BY_ROW);
-                echo '<br>';
-                print_r($cursor);
-
-                oci_free_statement($stid);
-                oci_free_statement($p_cursor);
-                oci_close($conn);
-
-            ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
+
+        <!-- pie de pagina -->
+		<footer>
+            <p style="text-align: center">Diseño y desarrollo por LenguajesBD Proyecto &copy; 2018</p>
+        </footer>
 
         <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
         <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
         <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js "></script>
-        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/vponsive/2.2.3/js/dataTables.responsive.min.js"></script>
+        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
         <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/responsive/2.2.3/js/responsive.bootstrap4.min.js"></script>
         <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/rowreorder/1.2.5/js/dataTables.rowReorder.min.js"></script>
 
-
-        <script type="text/javascript" src="http://localhost/Proyecto_Lenguajes_BD/recursos/javascript/pacientes.js"></script>
-
+        <script type="text/javascript" src="../../recursos/javascript/tratamientosmedico.js"></script>
+        <script src="../../recursos/javascript/js.js"></script>
     </body>
 </html>

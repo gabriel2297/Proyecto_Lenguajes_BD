@@ -152,6 +152,43 @@
             }
         }
 
+        // si se quiere obtener numero de salas
+        if($_POST['llave'] == "obtenerNumSalas"){
+
+            $sala = $_POST['sala'];
+
+            // obtener el ID del tipo de sala que se selecciono
+            $id_tipo_sala = "";
+            $datos = oci_parse($conn, "SELECT * FROM tipo_sala");
+            oci_execute ($datos);
+            while($fila = oci_fetch_assoc ($datos)){
+                if($sala == $fila["TIPO"]){
+                    $id_tipo_sala = $fila["ID_TIPO"];
+                    break;
+                }
+            }
+
+            // preparar sql
+            $sql = 'SELECT * FROM salas WHERE id_tipo = :id_tipo_sala';
+
+            // asignar valores
+            $query = oci_parse($conn, $sql);
+
+            // hacer el binding de las variables
+            oci_bind_by_name($query, ":id_tipo_sala", $id_tipo_sala);
+
+            // ejecutar el procedimiento almacenado
+            oci_execute($query);
+
+            $opciones = "";
+            while($data = oci_fetch_assoc ($query)){
+                $opciones .= "<option>" . $data['NUM_SALAS'] . "</option>";
+            }
+
+            echo $opciones;
+
+        }
+
 
 
         // si se quiere editar un paciente
@@ -204,34 +241,14 @@
             // obtener la cedula
             $cedula_paciente = $_POST['cedula_paciente'];
             $cedula_empleado = $_POST['cedula_empleado'];
-            $sala = $_POST['sala'];
-            $observaciones = $_POST['observaciones'];
-            $tipo_cita = $_POST['tipo_cita'];
+            $num_sala = $_POST['num_sala'];
             $fecha_hora = $_POST['fecha_hora'];
+            $tipo_cita = $_POST['tipo_cita'];
+            $id_estado_cita = 1;
+
 
             // convertir formato de fecha y hora
             $fecha_hora = date('d-m-Y H:i', strtotime($fecha_hora));
-
-            // obtener el id de sala seleccionado
-            $id_tipo_sala = 0;
-            $datos = oci_parse($conn, "SELECT * FROM tipo_sala");
-            oci_execute ($datos);
-            while($fila = oci_fetch_assoc ($datos)){
-                if($sala == $fila["TIPO"]){
-                    $id_tipo_sala = $fila["ID_TIPO"];
-                    break;
-                }
-            }
-
-            // obtener el numero de sala disponible
-            $num_sala = 0;
-            $datos = oci_parse($conn, "SELECT * FROM salas");
-            oci_execute($datos);
-            while($fila = oci_fetch_assoc($datos)){
-                if($fila['ID_TIPO'] == $id_tipo_sala){
-                    $num_sala = $fila['NUM_SALAS'];
-                }
-            }
 
             // obtener el id de tipo de cita
             $id_tipo_cita = 0;
@@ -248,8 +265,9 @@
                                     :cedula_empleado,
                                     :num_sala,
                                     :fecha_hora,
-                                    :observaciones,
-                                    :id_tipo_cita); 
+                                    :id_tipo_cita,
+                                    :id_estado_cita
+                                ); 
                     END;";
             
             // crear un query que junte la conexion a la BD con lo que se va a ejecutar, 
@@ -261,8 +279,8 @@
             oci_bind_by_name($query, ":cedula_empleado", $cedula_empleado);
             oci_bind_by_name($query, ":num_sala", $num_sala);
             oci_bind_by_name($query, ":fecha_hora", $fecha_hora);
-            oci_bind_by_name($query, ":observaciones", $observaciones);
             oci_bind_by_name($query, ":id_tipo_cita", $id_tipo_cita);
+            oci_bind_by_name($query, ":id_estado_cita", $id_estado_cita);
 
             // ejecutar el procedimiento almacenado 
             if(oci_execute($query)){

@@ -67,7 +67,6 @@
                         <li><a class="nav-link" href="tratamientos.php">Tratamientos</a></li>
                     </ul>
                     <ul class="navbar-nav ml-auto">
-						<li><a class="nav-link" href="ajustes.php">Ajustes</a></li>
 						<li><button type="button" class="btn btn-link" onclick="cerrarSesion('cerrarSesion')">Salir</button></li>
 					</ul>
                 </div>
@@ -193,15 +192,15 @@
                     <div class='container-fluid'>
                         <hr/>
                         <div class='introduccion'>
-                            <h5>Citas asignadas:</h5>
+                            <h5>Citas pendientes:</h5>
                         </div>
                         <hr/>
                         <table class='table table-striped table-bordered nowrap' style='width:100%' id='tabla_citas'>
                         <thead>
                             <th>Cita #</th>
+                            <th>Estado cita</th>
                             <th>Sala #</th>
                             <th>Fecha y hora</th>
-                            <th>Observaciones</th>
                             <th>Tipo de cita</th>
                             <th>Cedula paciente</th>
                             <th>Nombre</th>
@@ -227,9 +226,9 @@
                 while (($row = oci_fetch_array($p_cursor, OCI_ASSOC+OCI_RETURN_NULLS)) != false) {
                     echo "<tr>";
                     echo "<td>". $row['ID_CITA'] . "</td>";
+                    echo "<td>". $row['ESTADO_CITA'] . "</td>";
                     echo "<td>". $row['NUM_SALA'] . "</td>";
                     echo "<td>". $row['FECHA_HORA'] . "</td>";
-                    echo "<td>". $row['OBSERVACIONES'] . "</td>";
                     echo "<td>". $row['TIPO_CITA'] . "</td>";
                     echo "<td>". $row['CEDULA'] . "</td>";
                     echo "<td>". $row['NOMBRE'] . "</td>";

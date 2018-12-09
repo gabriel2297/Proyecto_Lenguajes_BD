@@ -64,6 +64,54 @@
             }
         }
 
+        // si es editar un tratamiento
+        if($_POST['llave'] == "editarTratamiento"){
+            $codigoActual = $_POST['codigoActual'];
+            $descripcion = $_POST['descripcion'];
+
+            // crear llamada al procedimiento almacenado 
+            $sql = "BEGIN editar_tratamiento(:codigoActual, :descripcion); END;";
+            
+            // crear un query que junte la conexion a la BD con lo que se va a ejecutar, 
+            //$conn viene de config_bd.php
+            $query = oci_parse($conn, $sql);
+
+            // juntar cada dato al query
+            oci_bind_by_name($query, ":codigoActual", $codigoActual);
+            oci_bind_by_name($query, ":descripcion", $descripcion);
+
+            // ejecutar el procedimiento almacenado 
+            if(oci_execute($query)){
+                echo "Tratamiento editado con éxito <i class='fa fa-check-circle'></i>";
+            }
+            else{
+                echo "Error";
+            }
+        }
+
+        // si es eliminar un tratamiento
+        if($_POST['llave'] == "eliminarTratamiento"){
+            $codigoEliminar = $_POST['codigoEliminar'];
+
+            // crear llamada al procedimiento almacenado 
+            $sql = "BEGIN eliminar_tratamiento(:codigoEliminar); END;";
+            
+            // crear un query que junte la conexion a la BD con lo que se va a ejecutar, 
+            //$conn viene de config_bd.php
+            $query = oci_parse($conn, $sql);
+
+            // juntar cada dato al query
+            oci_bind_by_name($query, ":codigoEliminar", $codigoEliminar);
+
+            // ejecutar el procedimiento almacenado 
+            if(oci_execute($query)){
+                echo "Tratamiento eliminado con éxito <i class='fa fa-check-circle'></i>";
+            }
+            else{
+                echo "Error";
+            }
+        }
+
         // cerrar conexion
         oci_close($conn);
 

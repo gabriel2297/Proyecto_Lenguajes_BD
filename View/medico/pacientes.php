@@ -7,8 +7,8 @@
       header("location: http://localhost/Proyecto_Lenguajes_BD/");
       exit;
     }
-    // el usuario tiene sesion, es admin?
-    if( $_SESSION['id_trabajo'] != 2 ){
+    // el usuario tiene sesion, es medico?
+    if( $_SESSION['id_trabajo'] != 1 ){
         http_response_code(403);
         exit;
     }
@@ -16,17 +16,19 @@
 
 <!DOCTYPE html>
 <html>
-    <head>
+	<head>
 		<title>Lenguajes de bases de datos</title>
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <meta name="keywords" content="HTML, CSS, JavaScript">
             <!-- Latest compiled and minified CSS -->
             <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+            
             <!-- bootstrap scripts -->
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
             <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+
             <!-- Google fonts -->
             <link href="https://fonts.googleapis.com/css?family=Abel" rel="stylesheet"> 
 
@@ -55,9 +57,7 @@
                 <!-- links del navbar -->
                 <div class="collapse navbar-collapse" id="links">
                     <ul class="navbar-nav">
-                        <li><a class="nav-link" href="pacientes.php">Pacientes</a></li>
-                        <li><a class="nav-link" href="personal.php">Personal</a></li>
-                        <li><a class="nav-link active" href="#">Salas</a></li>
+                        <li><a class="nav-link active" href="#">Mis pacientes</a></li>
                         <li><a class="nav-link" href="tratamientos.php">Tratamientos</a></li>
                     </ul>
                     <ul class="navbar-nav ml-auto">
@@ -74,35 +74,63 @@
                 <hr/>
             </div>
             <div class="introduccion">
-			    <button type="submit" class="btn btn-outline-success pull-right" id="agregarSalaBtn" data-toggle="modal" data-target="#agregarSalaModal">Nueva sala</button>
-                <h5>Manejo de salas</h5>
+                <h5>Manejo de pacientes</h5>
             </div>
             <div class="contenido">
                 <div id="resultados"></div>
                 <hr/>
                 <div>
-                <table class="table table-striped table-hover table-bordered nowrap" style="width:100%" id="tabla_salas">
+                    <table class="table table-striped table-hover table-bordered nowrap" style="width:100%" id="tabla_pacientes">
                         <thead>
-                            <th>Numero de sala</th>
-                            <th>Tipo de sala</th>
-                            <th>Acciones</th>
+                            <th>Número de cita</th>
+                            <th>Estado</th>
+                            <th>Número de sala</th>
+                            <th>Fecha y hora</th>
+                            <th>Tipo de cita</th>
+                            <th>Cedula</th>
+                            <th></th>
                         </thead>
                         <tbody>
-
+                            <?php
+                                $cedula = $_SESSION['cedula_empleado'];
+                                
+                                $p_cursor = oci_new_cursor($conn);
+                                $stid = oci_parse($conn, "begin :cursor := obtener_citas_medico(:cedula); end;");
+        
+                                oci_bind_by_name($stid, ":cedula", $cedula, 20);
+                                oci_bind_by_name($stid, ':cursor', $p_cursor, -1, OCI_B_CURSOR);
+                                oci_execute($stid);
+        
+                                oci_execute($p_cursor, OCI_DEFAULT);
+                                
+                                $contador = 0;
+        
+                                while (($row = oci_fetch_array($p_cursor, OCI_ASSOC+OCI_RETURN_NULLS)) != false) {
+                                    echo "<tr>";
+                                    echo "<td>". $row['ID_CITA'] . "</td>";
+                                    echo "<td>". $row['ESTADO_CITA'] . "</td>";
+                                    echo "<td>". $row['NUM_SALA'] . "</td>";
+                                    echo "<td>". $row['FECHA_HORA'] . "</td>";
+                                    echo "<td>". $row['TIPO_CITA'] . "</td>";
+                                    echo "<td>". $row['CEDULA'] . "</td>";
+                                    echo "<td><form method='GET' action='http://localhost/Proyecto_Lenguajes_BD/View/medico/infopacientes.php'> <input type='hidden' name='cedula_paciente' value='$row[CEDULA]'> <input type='hidden' name='num_cita' value='$row[ID_CITA]'> <button type='submit' class='btn btn-primary btn-sm'>Ver más</button>  </form></td>";
+                                    echo "</tr>";
+        
+                                    $contador++;
+                                }
+        
+                                oci_free_statement($stid);
+                                oci_free_statement($p_cursor);
+        
+                                if($contador == 0){
+                                    echo "<td colspan='7'>Ninguna cita encontrada</td>";
+                                }
+                            ?>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
-
-        <!-- Modal para agregar salas -->
-        <?php include("modals/agregar/agregarSalasModal.php");?>
-
-        <!-- Modal para agregar salas -->
-        <?php include("modals/editar/editarSalasModal.php");?>
-
-        <!-- Modal para eliminar salas -->
-        <?php include("modals/eliminar/eliminarSalasModal.php");?>
 
         <!-- pie de pagina -->
 		<footer>
@@ -116,7 +144,7 @@
         <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/responsive/2.2.3/js/responsive.bootstrap4.min.js"></script>
         <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/rowreorder/1.2.5/js/dataTables.rowReorder.min.js"></script>
 
-        <script type="text/javascript" src="../../recursos/javascript/salas.js"></script>
         <script src="../../recursos/javascript/js.js"></script>
+        
     </body>
 </html>

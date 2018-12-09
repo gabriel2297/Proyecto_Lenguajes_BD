@@ -63,7 +63,6 @@
                         <li><a class="nav-link" href="tratamientos.php">Tratamientos</a></li>
                     </ul>
                     <ul class="navbar-nav ml-auto">
-						<li><a class="nav-link" href="ajustes.php">Ajustes</a></li>
 						<li><button type="button" class="btn btn-link" onclick="cerrarSesion('cerrarSesion')">Salir</button></li>
 					</ul>
                 </div>

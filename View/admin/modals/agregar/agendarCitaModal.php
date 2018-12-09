@@ -25,8 +25,9 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="observaciones">Observaciones</label>
-                        <input type="text" class="form-control" id="observaciones" placeholder="Observaciones">
+                        <label for="id_sala">Número de sala</label>
+                        <select class="form-control" id="id_sala" name="sala">
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="tipo_cita">Tipo de cita</label>

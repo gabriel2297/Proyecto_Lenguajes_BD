@@ -3,7 +3,6 @@
     require_once 'config_bd.php';
     
     if(isset($_POST['llave'])){
-
         // si se quiere cargar de nuevo la tabla
         if($_POST['llave'] == "cargarTabla"){
 

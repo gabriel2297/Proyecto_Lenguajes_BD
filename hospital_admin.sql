@@ -104,12 +104,19 @@ CREATE TABLE cita(
     cedula_empleado varchar2(12) not null,
     num_sala number not null,
     fecha_hora date not null,
-    observaciones varchar2(200),
+    observaciones varchar2(1500),
     id_tipo_cita number not null,
+    id_estado_cita NUMBER NOT NULL,
     FOREIGN KEY(cedula_paciente) REFERENCES paciente(cedula),
     FOREIGN KEY(cedula_empleado) REFERENCES empleado(ecedula),
     FOREIGN KEY(num_sala) REFERENCES salas(num_salas),
-    FOREIGN KEY(id_tipo_cita) references tipo_cita(id_tipo_cita)
+    FOREIGN KEY(id_tipo_cita) references tipo_cita(id_tipo_cita),
+    FOREIGN KEY(id_estado_cita) REFERENCES estado_cita(id_estado)
+);
+
+CREATE TABLE estado_cita(
+    id_estado NUMBER NOT NULL PRIMARY KEY,
+    estado VARCHAR2(20)
 );
 
 CREATE TABLE auditoria(
@@ -168,7 +175,12 @@ INSERT INTO tipo_sala (id_tipo, tipo) VALUES (tipo_sala_secuencia.NEXTVAL, 'Alma
 INSERT INTO tipo_sala (id_tipo, tipo) VALUES (tipo_sala_secuencia.NEXTVAL, 'Habitacion');
 INSERT INTO tipo_sala (id_tipo, tipo) VALUES (tipo_sala_secuencia.NEXTVAL, 'Emergencias');
 
+-- estado citas
+INSERT INTO estado_cita (id_estado, estado) VALUES (1, 'Pendiente');
+INSERT INTO estado_cita (id_estado, estado) VALUES (2, 'Completa');
+
 /* PROCEDIMIENTOS ALMACENADOS */
+select * from empleado;
 
 -- procedimiento almacenado para guardar un paciente
 CREATE OR REPLACE PROCEDURE agregar_paciente(
@@ -316,13 +328,46 @@ execute agregar_empleado('01-1111-2222','medico','medico','medico','7698-0232','
 execute agregar_empleado('01-1111-2223','admin','admin','admin','7698-0232','admin@correo.com','19/07/1980', 1, 2, 'password');
 execute agregar_empleado('01-1111-2224','administrador','administrador','administrador','7698-0232','administrador@correo.com','19/07/1980', 1, 2, 'password');
 
-/*Agregar cita*/
+
+-- procedimiento almacenado para completar cita
+CREATE OR REPLACE PROCEDURE completar_cita(num_cita IN NUMBER, observaciones_cita IN VARCHAR2)
+AS
+	VERROR NUMBER;
+	VEXP exception;
+	VMES VARCHAR2(500);
+	total NUMBER;
+	cont number;
+BEGIN
+    -- revisar si ese numero de cita existe
+    total := 0;
+    SELECT COUNT(*) INTO total FROM cita WHERE id_cita = num_cita;
+
+    -- si existe, hacer update
+    IF total = 1 THEN
+        UPDATE cita SET observaciones = observaciones_cita, id_estado_cita = 2 WHERE id_cita = num_cita;
+    ELSE
+        raise  VEXP;
+    END IF;
+    exception
+    WHEN VEXP THEN
+              dbms_output.put_line(VMES);
+       VERROR := SQLCODE;
+       VMES := 'No existe una cita con ese numero.';
+       INSERT INTO AUDITORIA ( NERROR, MENSAJE, FECHA, USUARIO) 
+             VALUES(VERROR,VMES,SYSDATE, USER);
+    WHEN  OTHERS  THEN
+       VERROR := SQLCODE;
+       VMES := SQLERRM;
+        dbms_output.put_line(VMES);
+END;
+
+-- procedimiento almacenado para agregar cita
 create or replace procedure crear_cita( cedulaP in varchar2,
                                         cedulaE in varchar2,
                                         numSala in number,
                                         fechaH in varchar2,
-                                        observ in varchar2,
-                                        idTipoCita in number)
+                                        idTipoCita in number,
+                                        id_estadoCita in NUMBER)
 as
 	VERROR NUMBER;
 	VEXP exception;
@@ -337,19 +382,19 @@ BEGIN
     -- no hay citas a esa hora en ese consultorio, agregar a la persona
     IF total = 0 THEN
         INSERT INTO cita(id_cita,
-                             cedula_paciente,
-                             cedula_empleado,
-                             num_sala,
-                             fecha_hora,
-                             observaciones,
-                             id_tipo_cita) 
+                         cedula_paciente,
+                         cedula_empleado,
+                         num_sala,
+                         fecha_hora,
+                         id_tipo_cita,
+                         id_estado_cita) 
         VALUES (num_cita_secuencia.NEXTVAL,
                 cedulaP,
                 cedulaE,
                 numSala,
                 TO_DATE(fechah, 'DD-MM-YYYY HH24:MI'),
-                observ,
-                idTipoCita);
+                idTipoCita,
+                id_estadoCita);
     ELSE
         raise  VEXP;
     END IF;
@@ -365,11 +410,6 @@ BEGIN
        VMES := SQLERRM;
         dbms_output.put_line(VMES);
 END;
-
-EXECUTE crear_cita('01-1674-0099', '01-1111-2222', 3, to_char(sysdate,'DD-MM-YYYY HH24:MI'), 'Cita', 1);
-execute agregar_empleado('11-0743-0982','Andres','Escalante','Armadillo','7698-0232','Escalante.9874@gmail.com','19/07/1980',1,1);
-
-select * from cita;
 
 -- procedimient almacenado para guardar un tratamiento
 CREATE OR REPLACE PROCEDURE agregar_tratamiento(
@@ -391,12 +431,48 @@ BEGIN
     END IF;
 END;
 
+-- procedimiento almacenado para eliminar un tratamiento
+CREATE OR REPLACE PROCEDURE eliminar_tratamiento(
+    codigo IN NUMBER
+)
+IS
+BEGIN
+    DELETE FROM tratamientos WHERE id_tratamiento = codigo;
+END;
+
+-- procedimiento almacenado para editar un tratamiento
+CREATE OR REPLACE PROCEDURE editar_tratamiento(
+    codigo IN NUMBER,
+    descripcion IN VARCHAR2
+)
+IS
+BEGIN
+    UPDATE tratamientos SET tratamiento = descripcion WHERE id_tratamiento = codigo;
+END;
+
 -- procedimiento almacenado para agregar una sala
 CREATE OR REPLACE PROCEDURE agregar_sala(
     id_tipo_sala IN NUMBER)
 IS
 BEGIN
     INSERT INTO salas(num_salas, id_tipo) VALUES (num_salas_secuencia.NEXTVAL, id_tipo_sala);
+END;
+
+-- procedimiento almacenado para eliminar una sala
+CREATE OR REPLACE PROCEDURE eliminar_sala(
+    numero_sala IN NUMBER)
+IS
+BEGIN
+    DELETE FROM salas WHERE num_salas = numero_sala;
+END;
+
+-- procedimiento almacenado para editar una sala
+CREATE OR REPLACE PROCEDURE editar_sala(
+    tipo_de_sala IN NUMBER,
+    numero_sala IN NUMBER)
+AS
+BEGIN
+    UPDATE salas SET id_tipo = tipo_de_sala WHERE num_salas = numero_sala;
 END;
 
 /* FUNCIONES */
@@ -406,12 +482,13 @@ CREATE OR REPLACE FUNCTION obtener_citas_medico(cedulaMedico IN VARCHAR2)
 RETURN SYS_REFCURSOR
 AS
     DATOS SYS_REFCURSOR;
+    sql_din VARCHAR(1000);
 BEGIN
-    OPEN DATOS FOR 
-    SELECT c.id_cita, c.num_sala, TO_CHAR(c.fecha_hora, 'DD-MM-YYYY HH24:MI') fecha_hora, c.observaciones, t.tipo_cita, e.ecedula, e.enombre, e.eapellido1, e.eapellido2, p.cedula, p.nombre, p.apellido1, p.apellido2
-    FROM empleado e, paciente p, cita c, tipo_cita t
-    WHERE c.cedula_paciente = p.cedula AND c.cedula_empleado = e.ecedula
-    AND c.id_tipo_cita = t.id_tipo_cita AND e.ecedula = cedulaMedico;
+    sql_din := 'SELECT c.id_cita, estado.estado estado_cita, c.num_sala, TO_CHAR(c.fecha_hora, ''DD-MM-YYYY HH24:MI'') fecha_hora, c.observaciones, t.tipo_cita, e.ecedula, e.enombre, e.eapellido1, e.eapellido2, p.cedula, p.nombre, p.apellido1, p.apellido2
+                FROM empleado e, paciente p, cita c, tipo_cita t, estado_cita estado
+                WHERE c.cedula_paciente = p.cedula AND c.cedula_empleado = e.ecedula
+                AND c.id_tipo_cita = t.id_tipo_cita AND e.ecedula = :cedulaMedico AND estado.id_estado = 1 AND c.id_estado_cita = estado.id_estado';
+    OPEN DATOS FOR sql_din USING cedulaMedico;
     RETURN DATOS;
 END;
 
@@ -420,13 +497,13 @@ CREATE OR REPLACE FUNCTION obtener_citas_paciente(cedulaPaciente IN VARCHAR2)
 RETURN SYS_REFCURSOR
 AS
     DATOS SYS_REFCURSOR;
+    sql_din VARCHAR(1000);
 BEGIN
-    OPEN DATOS FOR 
-    SELECT c.id_cita, c.num_sala, TO_CHAR(c.fecha_hora, 'DD-MM-YYYY HH24:MI') fecha_hora, c.observaciones, t.tipo_cita, e.ecedula, e.enombre, e.eapellido1, e.eapellido2, p.cedula, p.nombre, p.apellido1, p.apellido2
-    FROM empleado e, paciente p, cita c, tipo_cita t
-    WHERE c.cedula_paciente = p.cedula AND c.cedula_empleado = e.ecedula
-    AND c.id_tipo_cita = t.id_tipo_cita AND c.fecha_hora >= SYSDATE
-    AND p.cedula = cedulaPaciente;
+    sql_din := 'SELECT c.id_cita, estado.estado estado_cita, c.num_sala, TO_CHAR(c.fecha_hora, ''DD-MM-YYYY HH24:MI'') fecha_hora, c.observaciones, t.tipo_cita, e.ecedula, e.enombre, e.eapellido1, e.eapellido2, p.cedula, p.nombre, p.apellido1, p.apellido2
+                FROM empleado e, paciente p, cita c, tipo_cita t, estado_cita estado
+                WHERE c.cedula_paciente = p.cedula AND c.cedula_empleado = e.ecedula
+                AND c.id_tipo_cita = t.id_tipo_cita AND p.cedula = :cedulaPaciente AND estado.id_estado = 1 AND c.id_estado_cita = estado.id_estado';
+    OPEN DATOS FOR sql_din USING cedulaPaciente;
     RETURN DATOS;
 END;
 
@@ -435,12 +512,14 @@ CREATE OR REPLACE FUNCTION obtener_citas_medico_x_fecha(cedulaMedico IN VARCHAR2
 RETURN SYS_REFCURSOR
 AS
     DATOS SYS_REFCURSOR;
+    sql_din VARCHAR2(1000);
 BEGIN
-    OPEN DATOS FOR 
-    SELECT c.id_cita, c.num_sala, TO_CHAR(c.fecha_hora, 'DD-MM-YYYY HH24:MI') fecha_hora, c.observaciones, t.tipo_cita, e.ecedula, e.enombre, e.eapellido1, e.eapellido2, p.cedula, p.nombre, p.apellido1, p.apellido2
-    FROM empleado e, paciente p, cita c, tipo_cita t
-    WHERE c.cedula_paciente = p.cedula AND c.cedula_empleado = cedulaMedico
-    AND c.id_tipo_cita = t.id_tipo_cita AND c.fecha_hora = TO_DATE(fecha_revisar,  'DD-MM-YYYY HH24:MI');
+    sql_din := 'SELECT c.id_cita, c.num_sala, TO_CHAR(c.fecha_hora, ''DD-MM-YYYY HH24:MI'') fecha_hora, c.observaciones, t.tipo_cita, e.ecedula, e.enombre, e.eapellido1, e.eapellido2, p.cedula, p.nombre, p.apellido1, p.apellido2
+                FROM empleado e, paciente p, cita c, tipo_cita t
+                WHERE c.cedula_paciente = p.cedula AND c.cedula_empleado = :cedulaMedico
+                AND c.id_tipo_cita = t.id_tipo_cita AND c.fecha_hora = TO_DATE(:fecha_revisar,  ''DD-MM-YYYY HH24:MI'')
+                AND c.cedula_empleado = e.ecedula';
+    OPEN DATOS FOR sql_din USING cedulaMedico, fecha_revisar;
     RETURN DATOS;
 END;
 
@@ -449,9 +528,9 @@ CREATE OR REPLACE FUNCTION obtener_citas_en_fecha(fecha_revisar IN VARCHAR2)
 RETURN SYS_REFCURSOR
 AS
     DATOS SYS_REFCURSOR;
-    sql_din VARCHAR(100);
+    sql_din VARCHAR(1000);
 BEGIN
-    sql_din := '    SELECT c.id_cita, c.num_sala, TO_CHAR(c.fecha_hora, "DD-MM-YYYY HH24:MI") fecha_hora, c.observaciones, t.tipo_cita, e.ecedula, e.enombre, e.eapellido1, e.eapellido2, p.cedula, p.nombre, p.apellido1, p.apellido2
+    sql_din := '    SELECT c.id_cita, c.num_sala, TO_CHAR(c.fecha_hora, ''DD-MM-YYYY HH24:MI'') fecha_hora, c.observaciones, t.tipo_cita, e.ecedula, e.enombre, e.eapellido1, e.eapellido2, p.cedula, p.nombre, p.apellido1, p.apellido2
                     FROM empleado e, paciente p, cita c, tipo_cita t
                     WHERE c.id_tipo_cita = t.id_tipo_cita AND c.fecha_hora = TO_DATE(:fecha_revisar,  ''DD-MM-YYYY HH24:MI'')';
     OPEN DATOS FOR sql_din USING fecha_revisar;
@@ -660,6 +739,22 @@ BEFORE DELETE ON empleado
 FOR EACH ROW
 BEGIN
     DELETE FROM cita WHERE cedula_empleado = :OLD.ecedula;
+END;
+
+-- trigger para eliminar las llaves foraneas en la tabla de citas antes de borrar el primary key en la tabla de salas
+CREATE OR REPLACE TRIGGER eliminar_sala
+BEFORE DELETE ON salas
+FOR EACH ROW
+BEGIN
+    DELETE FROM cita WHERE num_sala = :OLD.num_salas;
+END;
+
+-- trigger para eliminar las llaves foraneas de la tabla de pacientes antes de borrar el primary key en la tabla de tratamientos
+CREATE OR REPLACE TRIGGER eliminar_tratamiento
+BEFORE DELETE ON tratamientos
+FOR EACH ROW
+BEGIN
+    DELETE FROM paciente_x_tratamiento WHERE id_tratamiento = :OLD.id_tratamiento;
 END;
 
 

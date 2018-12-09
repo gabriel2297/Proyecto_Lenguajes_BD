@@ -1,4 +1,18 @@
-<?php include '../../php/config_bd.php'; ?>
+<?php
+	require_once '../../php/config_bd.php';
+    // iniciar la sesion
+    session_start();
+    // Si aun no hay sesion significa que el usuario no ha hecho login, redireccionar a login
+    if(!isset($_SESSION['cedula_empleado']) || empty($_SESSION['cedula_empleado'])){
+      header("location: http://localhost/Proyecto_Lenguajes_BD/");
+      exit;
+    }
+    // el usuario tiene sesion, es admin?
+    if( $_SESSION['id_trabajo'] != 2 ){
+        http_response_code(403);
+        exit;
+    }
+?>
 
 <!DOCTYPE html>
 <html>
@@ -47,7 +61,6 @@
                         <li><a class="nav-link active" href="#">Tratamientos</a></li>
                     </ul>
                     <ul class="navbar-nav ml-auto">
-						<li><a class="nav-link" href="ajustes.php">Ajustes</a></li>
 						<li><button type="button" class="btn btn-link" onclick="cerrarSesion('cerrarSesion')">Salir</button></li>
 					</ul>
                 </div>
@@ -84,6 +97,12 @@
 
         <!-- Modal para agregar tratamientos -->
         <?php include("modals/agregar/agregarTratamientoModal.php");?>
+
+        <!-- Modal para editar tratamientos -->
+        <?php include("modals/editar/editarTratamientosModal.php");?>
+
+        <!-- Modal para eliminar tratamientos -->
+        <?php include("modals/eliminar/eliminarTratamientoModal.php");?>
 
         <!-- pie de pagina -->
 		<footer>
