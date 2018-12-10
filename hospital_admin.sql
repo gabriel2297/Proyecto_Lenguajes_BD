@@ -578,6 +578,18 @@ BEGIN
     RETURN DATOS;
 END;
 
+-- funcion para buscar un paciente por cedula
+CREATE OR REPLACE FUNCTION buscar_paciente(cedula_paciente IN VARCHAR2)
+RETURN SYS_REFCURSOR
+AS
+    DATOS SYS_REFCURSOR;
+    sql_din VARCHAR2(1000);
+BEGIN
+    sql_din := 'SELECT * FROM paciente WHERE cedula LIKE '':cedula_paciente%''';
+    OPEN DATOS FOR sql_din USING cedula_paciente;
+    RETURN DATOS;
+END;
+
 -- funcion para eliminar un paciente
 CREATE OR REPLACE FUNCTION eliminar_paciente(cedula_paciente IN VARCHAR2)
 RETURN VARCHAR2
@@ -757,6 +769,7 @@ BEFORE DELETE ON paciente
 FOR EACH ROW
 BEGIN
     DELETE FROM paciente_x_tratamiento WHERE cedula = :OLD.cedula;
+    DELETE FROM cita WHERE cedula_paciente = :OLD.cedula;
 END;
 
 -- trigger que elimina las llaves foraneas en la tabla de citas antes de borrar el primary key en la tabla empleado
@@ -782,5 +795,6 @@ FOR EACH ROW
 BEGIN
     DELETE FROM paciente_x_tratamiento WHERE id_tratamiento = :OLD.id_tratamiento;
 END;
+
 
 
