@@ -95,7 +95,7 @@
                                 $cedula = $_SESSION['cedula_empleado'];
                                 
                                 $p_cursor = oci_new_cursor($conn);
-                                $stid = oci_parse($conn, "begin :cursor := obtener_citas_medico(:cedula); end;");
+                                $stid = oci_parse($conn, "begin :cursor := obtener_citas_medico_dia(:cedula); end;");
         
                                 oci_bind_by_name($stid, ":cedula", $cedula, 20);
                                 oci_bind_by_name($stid, ':cursor', $p_cursor, -1, OCI_B_CURSOR);

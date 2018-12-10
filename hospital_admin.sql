@@ -431,6 +431,17 @@ BEGIN
     END IF;
 END;
 
+-- procedimiento almacenado para guardar un tratamiento
+CREATE OR REPLACE PROCEDURE asignar_tratamiento(
+    cedula_paciente IN VARCHAR, 
+    id_tratamiento_asignar IN NUMBER
+)
+AS
+BEGIN
+    INSERT INTO paciente_x_tratamiento (id_tratamiento, cedula, fecha_receta) VALUES (id_tratamiento_asignar, cedula_paciente, SYSDATE);
+END;
+
+
 -- procedimiento almacenado para eliminar un tratamiento
 CREATE OR REPLACE PROCEDURE eliminar_tratamiento(
     codigo IN NUMBER
@@ -508,18 +519,18 @@ BEGIN
 END;
 
 -- buscar las citas para un medico en una fecha especifica
-CREATE OR REPLACE FUNCTION obtener_citas_medico_x_fecha(cedulaMedico IN VARCHAR2, fecha_revisar IN VARCHAR2)
+CREATE OR REPLACE FUNCTION obtener_citas_medico_dia(cedulaMedico IN VARCHAR2)
 RETURN SYS_REFCURSOR
 AS
     DATOS SYS_REFCURSOR;
     sql_din VARCHAR2(1000);
 BEGIN
-    sql_din := 'SELECT c.id_cita, c.num_sala, TO_CHAR(c.fecha_hora, ''DD-MM-YYYY HH24:MI'') fecha_hora, c.observaciones, t.tipo_cita, e.ecedula, e.enombre, e.eapellido1, e.eapellido2, p.cedula, p.nombre, p.apellido1, p.apellido2
-                FROM empleado e, paciente p, cita c, tipo_cita t
+    sql_din := 'SELECT c.id_cita, estado.estado estado_cita, c.num_sala, TO_CHAR(c.fecha_hora, ''DD-MM-YYYY HH24:MI'') fecha_hora, c.observaciones, t.tipo_cita, e.ecedula, e.enombre, e.eapellido1, e.eapellido2, p.cedula, p.nombre, p.apellido1, p.apellido2
+                FROM empleado e, paciente p, cita c, tipo_cita t, estado_cita estado
                 WHERE c.cedula_paciente = p.cedula AND c.cedula_empleado = :cedulaMedico
-                AND c.id_tipo_cita = t.id_tipo_cita AND c.fecha_hora = TO_DATE(:fecha_revisar,  ''DD-MM-YYYY HH24:MI'')
-                AND c.cedula_empleado = e.ecedula';
-    OPEN DATOS FOR sql_din USING cedulaMedico, fecha_revisar;
+                AND c.id_tipo_cita = t.id_tipo_cita AND TO_CHAR(c.fecha_hora, ''DD/MON/YYYY'') = TO_CHAR(SYSDATE,  ''DD/MON/YYYY'')
+                AND c.cedula_empleado = e.ecedula AND estado.id_estado = 1 AND c.id_estado_cita = estado.id_estado';
+    OPEN DATOS FOR sql_din USING cedulaMedico;
     RETURN DATOS;
 END;
 
@@ -534,6 +545,21 @@ BEGIN
                     FROM empleado e, paciente p, cita c, tipo_cita t
                     WHERE c.id_tipo_cita = t.id_tipo_cita AND c.fecha_hora = TO_DATE(:fecha_revisar,  ''DD-MM-YYYY HH24:MI'')';
     OPEN DATOS FOR sql_din USING fecha_revisar;
+    RETURN DATOS;
+END;
+
+-- funcion para obtener historial de un paciente
+CREATE OR REPLACE FUNCTION historial_paciente(cedulaPaciente IN VARCHAR2)
+RETURN SYS_REFCURSOR
+AS
+    DATOS SYS_REFCURSOR;
+    sql_din VARCHAR(1000);
+BEGIN
+    sql_din := 'SELECT c.id_cita, estado.estado estado_cita, c.num_sala, TO_CHAR(c.fecha_hora, ''DD-MM-YYYY HH24:MI'') fecha_hora, c.observaciones, t.tipo_cita, e.ecedula, e.enombre, e.eapellido1, e.eapellido2, p.cedula, p.nombre, p.apellido1, p.apellido2
+                FROM empleado e, paciente p, cita c, tipo_cita t, estado_cita estado
+                WHERE c.cedula_paciente = p.cedula AND c.cedula_empleado = e.ecedula
+                AND c.id_tipo_cita = t.id_tipo_cita AND p.cedula = :cedulaPaciente AND estado.id_estado = 2 AND c.id_estado_cita = estado.id_estado';
+    OPEN DATOS FOR sql_din USING cedulaPaciente;
     RETURN DATOS;
 END;
 

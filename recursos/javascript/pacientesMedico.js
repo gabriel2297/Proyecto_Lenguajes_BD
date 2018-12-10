@@ -73,3 +73,40 @@ function terminarCita(llave){
         }
     });
 }
+
+function asignarTratamiento(llave){
+    var cedula = $("#cedula");
+    var tratamientoAsignar = $("#tratamientoAsignar");
+
+    $.ajax({
+        url: "http://localhost/Proyecto_Lenguajes_BD/php/manejoPacientesMedico.php",
+        method: "POST",
+        dataType: "text",
+        data: {
+            llave: llave,
+            cedula: cedula.val(),
+            tratamientoAsignar: tratamientoAsignar.val()
+        }, success: function(respuesta){
+            if(respuesta != "Error"){
+                $("#resultados").addClass("alert alert-success");
+                $("#resultados").html("Tratamiento agregado <i class='fa fa-check-circle'></i>");
+                $("#resultados").delay(2000).fadeOut(function(){
+                    $(this).removeClass("alert alert-success");
+                    $(this).html("");
+                    $(this).css("display", "");
+                    location.reload(true);
+                }); 
+                
+            }
+            else{
+                $("#resultados").addClass("alert alert-danger");
+                $("#resultados").html("Ocurrió un error, por favor intentelo de nuevo. Si vuelve a pasar comuníquese a soporte@sah.com");
+                $("#resultados").delay(5000).fadeOut(function(){
+                    $(this).removeClass("alert alert-danger");
+                    $(this).html("");
+                    $(this).css("display", "");
+                });
+            }
+        }
+    });
+}

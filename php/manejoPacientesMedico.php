@@ -4,6 +4,37 @@
     
     if(isset($_POST['llave'])){
 
+        // si se quiere agregar un nuevo tratamiento al paciente
+        if($_POST['llave'] == "asignarTratamiento"){
+            $cedula = $_POST['cedula'];
+            $tratamiento = $_POST['tratamientoAsignar'];
+
+            // obtener el id del tratamiento a asignar
+            $query = oci_parse($conn, "SELECT * FROM tratamientos");
+            oci_execute($query);
+            while($fila = oci_fetch_assoc ($query)){
+                if($fila['TRATAMIENTO'] == $tratamiento){
+                    $id_tratamiento = $fila['ID_TRATAMIENTO'];
+                    break;
+                }
+            }
+
+            $sql = "BEGIN asignar_tratamiento(:cedula, :id_tratamiento); END;";
+            $query = oci_parse($conn, $sql);
+
+            // juntar cada dato al query
+            oci_bind_by_name($query, ":cedula", $cedula);
+            oci_bind_by_name($query, ":id_tratamiento", $id_tratamiento);
+
+            // ejecutar el procedimiento almacenado 
+            if(oci_execute($query)){
+                echo "Exito";
+            }
+            else{
+                echo "Error";
+            }
+        }
+
         // si se quiere finalizar una cita
         if($_POST['llave'] == "terminarCita"){
             $num_cita = $_POST['num_cita'];

@@ -78,6 +78,7 @@
                 <hr/>
             </div>
             <div class="introduccion">
+                <button type="submit" class="btn btn-primary pull-right" id="asignarTratamientosBtn" data-toggle="modal" data-target="#asignarTratamientosModal">Asignar tratamientos</button>
                 <button type="submit" class="btn btn-primary pull-right" id="verTratamientosBtn" data-toggle="modal" data-target="#verTratamientosModal">Ver tratamientos</button>
                 <h5>Información de pacientes</h5>
             </div>
@@ -190,16 +191,20 @@
                  <h5>Historial del paciente</h5>
             </div>
             <hr/>
-            <table class="table table-striped table-bordered nowrap" style="width:100%" id="tabla_historial">
+            <table class="table table-striped table-hover table-bordered nowrap" style="width:100%" id="tabla_historial">
                 <thead>
-                    <th>Tratamiento</th>
-                    <th>Fecha asignado</th>
+                    <th>Cita #</th>
+                    <th>Fecha</th>
+                    <th>Observaciones</th>
+                    <th>Tipo de cita</th>
+                    <th>Cedula medico</th>
+                    <th>Nombre del medico</th>
                 </thead>
                 <tbody>
                     <?php
                         $cedula = $_GET['cedula_paciente'];
                         $p_cursor = oci_new_cursor($conn);
-                        $stid = oci_parse($conn, "begin :cursor := buscar_tratamientos_paciente(:cedula); end;");
+                        $stid = oci_parse($conn, "begin :cursor := historial_paciente(:cedula); end;");
 
                         oci_bind_by_name($stid, ":cedula", $cedula, 20);
                         oci_bind_by_name($stid, ':cursor', $p_cursor, -1, OCI_B_CURSOR);
@@ -210,8 +215,12 @@
                         $counter = 0;
                         while (($row = oci_fetch_array($p_cursor, OCI_ASSOC+OCI_RETURN_NULLS)) != false) {
                             echo "<tr>";
-                            echo "<td>" . $row['TRATAMIENTO'] . "</td>";
-                            echo "<td>" . $row['FECHA_RECETA'] . "</td>";
+                            echo "<td>" . $row['ID_CITA'] . "</td>";
+                            echo "<td>" . $row['FECHA_HORA'] . "</td>";
+                            echo "<td>" . $row['OBSERVACIONES'] . "</td>";
+                            echo "<td>" . $row['TIPO_CITA'] . "</td>";
+                            echo "<td>" . $row['ECEDULA'] . "</td>";
+                            echo "<td>" . $row['ENOMBRE'] . " " . $row['EAPELLIDO1'] . " " . $row['EAPELLIDO2'] . "</td>";
                             echo "</tr>";
                             $counter++;
                         }
@@ -231,6 +240,8 @@
         <?php include("modals/verTratamientosModal.php");?>
         <!-- Modal para terminar cita -->
         <?php include("modals/terminarCitaModal.php");?>
+        <!-- Modal para asignar tratamientos -->
+        <?php include("modals/asignarTratamientosModal.php");?>
         
         <!-- pie de pagina -->
 		<footer>

@@ -245,6 +245,54 @@
                     ?>
                 </tbody>
             </table>
+            <hr/>
+            <div class="introduccion">
+                 <h5>Citas pasadas:</h5>
+            </div>
+            <hr/>
+            <table class="table table-striped table-hover table-bordered nowrap" style="width:100%" id="tabla_historial">
+                <thead>
+                    <th>Cita #</th>
+                    <th>Fecha</th>
+                    <th>Observaciones</th>
+                    <th>Tipo de cita</th>
+                    <th>Cedula medico</th>
+                    <th>Nombre del medico</th>
+                </thead>
+                <tbody>
+                    <?php
+                        $cedula = $_GET['cedula_paciente'];
+                        $p_cursor = oci_new_cursor($conn);
+                        $stid = oci_parse($conn, "begin :cursor := historial_paciente(:cedula); end;");
+
+                        oci_bind_by_name($stid, ":cedula", $cedula, 20);
+                        oci_bind_by_name($stid, ':cursor', $p_cursor, -1, OCI_B_CURSOR);
+                        oci_execute($stid);
+
+                        oci_execute($p_cursor, OCI_DEFAULT);
+                        
+                        $counter = 0;
+                        while (($row = oci_fetch_array($p_cursor, OCI_ASSOC+OCI_RETURN_NULLS)) != false) {
+                            echo "<tr>";
+                            echo "<td>" . $row['ID_CITA'] . "</td>";
+                            echo "<td>" . $row['FECHA_HORA'] . "</td>";
+                            echo "<td>" . $row['OBSERVACIONES'] . "</td>";
+                            echo "<td>" . $row['TIPO_CITA'] . "</td>";
+                            echo "<td>" . $row['ECEDULA'] . "</td>";
+                            echo "<td>" . $row['ENOMBRE'] . " " . $row['EAPELLIDO1'] . " " . $row['EAPELLIDO2'] . "</td>";
+                            echo "</tr>";
+                            $counter++;
+                        }
+
+                        if($counter == 0){
+                            echo "<td colspan='6'>Ninguna cita encontrada</td>";
+                        }
+
+                        oci_free_statement($stid);
+                        oci_free_statement($p_cursor);
+                    ?>
+                </tbody>
+            </table>
         </div>
         <!-- pie de pagina -->
 		<footer>
@@ -259,6 +307,7 @@
 
         <!-- Modal para ver tratamientos -->
         <?php include("modals/ver/verTratamientosModal.php");?>
+
 
         <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
         <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
